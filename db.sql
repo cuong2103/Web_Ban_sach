@@ -382,6 +382,98 @@ CREATE TABLE reviews (
   COMMENT = 'Bảng đánh giá sách';
 
 -- ============================================================
+-- SAMPLE DATA SEED (dev/demo)
+-- ============================================================
+
+-- Danh mục sách
+INSERT INTO categories (category_id, name, slug, description, status) VALUES
+  (1, 'Văn học', 'van-hoc', 'Tiểu thuyết, truyện ngắn, tản văn', 1),
+  (2, 'Kinh tế', 'kinh-te', 'Kinh doanh, tài chính, quản trị', 1),
+  (3, 'Thiếu nhi', 'thieu-nhi', 'Sách cho trẻ em và thiếu niên', 1),
+  (4, 'Kỹ năng sống', 'ky-nang-song', 'Phát triển bản thân và kỹ năng mềm', 1),
+  (5, 'Khoa học', 'khoa-hoc', 'Kiến thức khoa học phổ thông', 1),
+  (6, 'Lịch sử', 'lich-su', 'Sách lịch sử Việt Nam và thế giới', 1);
+
+-- Người dùng mẫu (password: 123456)
+INSERT INTO users (user_id, role_id, full_name, email, password, phone, address, status) VALUES
+  (1, 2, 'Khach Demo', 'demo.customer@bookstore.local', '$2y$10$wHjV8X2Q0dZk7F6q8rGm5eY7Q2VgWw7Y6kP3hW9gC1uL9aG9d2x3K', '0900000001', 'Ho Chi Minh', 1),
+  (2, 1, 'Admin Demo', 'admin@bookstore.local', '$2y$10$wHjV8X2Q0dZk7F6q8rGm5eY7Q2VgWw7Y6kP3hW9gC1uL9aG9d2x3K', '0900000002', 'Ho Chi Minh', 1);
+
+-- Sách mẫu
+INSERT INTO books (
+  book_id, category_id, title, author, publisher, price, sale_price, description,
+  thumbnail, weight, dimensions, cover_type, stock, status, is_featured, is_bestseller
+) VALUES
+  (1, 1, 'Nha Gia Kim', 'Paulo Coelho', 'Nha Nam', 99000, 79000,
+   'Tieu thuyet kinh dien ve hanh trinh theo duoi uoc mo.',
+   'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600', '300', '13x20.5 cm', 'Bìa mềm', 45, 1, 1, 1),
+
+  (2, 1, 'Dac Nhan Tam', 'Dale Carnegie', 'Tre', 120000, 95000,
+   'Cuon sach kinh dien ve nghe thuat giao tiep va ung xu.',
+   'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600', '320', '14x20.5 cm', 'Bìa mềm', 60, 1, 1, 1),
+
+  (3, 2, 'Tu Tot Den Vi Dai', 'Jim Collins', 'Lao Dong', 168000, 138000,
+   'Phan tich cach doanh nghiep vuot len tro thanh cong ty vi dai.',
+   'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=600', '360', '16x24 cm', 'Bìa mềm', 25, 1, 1, 0),
+
+  (4, 2, 'Cha Giau Cha Ngheo', 'Robert T. Kiyosaki', 'Tre', 110000, 89000,
+   'Bai hoc tai chinh ca nhan can ban cho moi nguoi.',
+   'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600', '280', '13x20.5 cm', 'Bìa mềm', 40, 1, 1, 1),
+
+  (5, 3, 'De Men Phieu Luu Ky', 'To Hoai', 'Kim Dong', 75000, 65000,
+   'Tac pham thieu nhi noi tieng cua van hoc Viet Nam.',
+   'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=600', '260', '13x19 cm', 'Bìa mềm', 70, 1, 0, 1),
+
+  (6, 3, 'Harry Potter Va Hon Da Phu Thuy', 'J.K. Rowling', 'Tre', 185000, 159000,
+   'Tap dau tien trong bo truyen phieu luu ky ao.',
+   'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600', '420', '14x20.5 cm', 'Bìa cứng', 35, 1, 1, 1),
+
+  (7, 4, 'Atomic Habits', 'James Clear', 'The Gioi', 189000, 149000,
+   'Phuong phap xay dung thoi quen tot va loai bo thoi quen xau.',
+   'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600', '340', '14x20.5 cm', 'Bìa mềm', 55, 1, 1, 1),
+
+  (8, 4, '7 Thoi Quen Hieu Qua', 'Stephen R. Covey', 'Tong Hop', 179000, NULL,
+   'Bo nguyen tac nen tang de nang cao hieu qua cong viec va cuoc song.',
+   'https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=600', '390', '16x24 cm', 'Bìa mềm', 20, 1, 0, 0),
+
+  (9, 5, 'Luoc Su Thoi Gian', 'Stephen Hawking', 'Tre', 165000, 139000,
+   'Giai thich de hieu ve vu tru, thoi gian va vat ly hien dai.',
+   'https://images.unsplash.com/photo-1455885666463-26c6e3d0e7f1?w=600', '310', '13x20.5 cm', 'Bìa mềm', 28, 1, 1, 0),
+
+  (10, 5, 'Sapiens Luoc Su Loai Nguoi', 'Yuval Noah Harari', 'Tri Thuc', 199000, 169000,
+   'Hanh trinh phat trien cua loai nguoi tu qua khu den hien tai.',
+   'https://images.unsplash.com/photo-1515098506762-79e1384e9d8e?w=600', '450', '16x24 cm', 'Bìa mềm', 32, 1, 1, 1),
+
+  (11, 6, 'Viet Nam Su Luoc', 'Tran Trong Kim', 'Van Hoc', 135000, 109000,
+   'Cong trinh tong hop lich su Viet Nam theo dong thoi gian.',
+   'https://images.unsplash.com/photo-1521056787327-5f4aa9f02740?w=600', '370', '16x24 cm', 'Bìa mềm', 22, 1, 0, 0),
+
+  (12, 6, 'The Silk Roads', 'Peter Frankopan', 'Penguin', 220000, 189000,
+   'Goc nhin moi ve lich su the gioi qua con duong to lua.',
+   'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600', '410', '16x24 cm', 'Bìa cứng', 18, 1, 0, 1);
+
+-- Hinh anh chi tiet cho trang book detail
+INSERT INTO book_images (book_id, image_url) VALUES
+  (1, 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=600'),
+  (1, 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600'),
+  (2, 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600'),
+  (3, 'https://images.unsplash.com/photo-1455885666463-26c6e3d0e7f1?w=600'),
+  (4, 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=600'),
+  (5, 'https://images.unsplash.com/photo-1521056787327-5f4aa9f02740?w=600'),
+  (6, 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600'),
+  (7, 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600'),
+  (8, 'https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=600'),
+  (9, 'https://images.unsplash.com/photo-1515098506762-79e1384e9d8e?w=600');
+
+-- Gio hang mau cho user demo de hien thi badge tren navbar
+INSERT INTO carts (cart_id, user_id) VALUES
+  (1, 1);
+
+INSERT INTO cart_items (cart_item_id, cart_id, book_id, quantity, price) VALUES
+  (1, 1, 1, 1, 79000),
+  (2, 1, 7, 2, 149000);
+
+-- ============================================================
 -- RE-ENABLE FOREIGN KEY CHECKS
 -- ============================================================
 SET FOREIGN_KEY_CHECKS = 1;
