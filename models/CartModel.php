@@ -126,5 +126,56 @@ class CartModel
         $stmt = $this->conn->prepare("DELETE FROM cart_items WHERE cart_id = :cart_id AND book_id = :book_id");
         return $stmt->execute(['cart_id' => $cartId, 'book_id' => (int) $bookId]);
     }
+
+    public function getGuestItems()
+    {
+        return $_SESSION['guestCart'] ?? [];
+    }
+
+    public function addGuestItem($bookId, $quantity, $price)
+    {
+        $bookId = (int) $bookId;
+        $quantity = max(1, (int) $quantity);
+
+        if (!isset($_SESSION['guestCart'])) {
+            $_SESSION['guestCart'] = [];
+        }
+
+        if (isset($_SESSION['guestCart'][$bookId])) {
+            $_SESSION['guestCart'][$bookId]['quantity'] += $quantity;
+        } else {
+            $_SESSION['guestCart'][$bookId] = [
+                'book_id' => $bookId,
+                'quantity' => $quantity,
+                'price' => $price,
+            ];
+        }
+        return true;
+    }
+
+    public function removeGuestItem($bookId)
+    {
+        $bookId = (int) $bookId;
+        if (isset($_SESSION['guestCart'][$bookId])) {
+            unset($_SESSION['guestCart'][$bookId]);
+        }
+        return true;
+    }
+
+    public function clearGuestCart()
+    {
+        unset($_SESSION['guestCart']);
+        return true;
+    }
+
+    public function mergeGuestCartToUser($userId)
+    {
+        $items = $this->getGuestItems();
+        foreach ($items as $item) {
+            $this->addToCart($userId, $item['book_id'], $item['quantity'], $item['price']);
+        }
+        $this->clearGuestCart();
+        return true;
+    }
 }
 ?>

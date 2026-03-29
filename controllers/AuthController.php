@@ -51,6 +51,10 @@ class AuthController
       'avatar'   => $user['avatar'] ?? null,
     ];
 
+    // merge giỏ hàng guest vào user cart
+    $cartModel = new CartModel();
+    $cartModel->mergeGuestCartToUser($user['id']);
+
     unset($_SESSION['old']);
 
     Message::set('success', 'Đăng nhập thành công! Chào mừng ' . $user['fullname']);
