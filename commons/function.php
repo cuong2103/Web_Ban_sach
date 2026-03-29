@@ -70,6 +70,7 @@ function deleteSessionError()
 function checkLogin()
 {
     if (!isset($_SESSION['currentUser']["roles"])) {
+        Message::set('error', 'Vui lòng đăng nhập để thực hiện chức năng này.');
         $act = $_GET['act'] ?? '/';
         // Nếu đang cố vào link admin thì redirect ra đăng nhập admin, ngược lại đẩy ra đăng nhập khách
         if (str_starts_with($act, 'admin-')) {
