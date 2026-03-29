@@ -264,137 +264,45 @@ class CartModel
       ];
     }
 
-    return [
-      'is_valid' => true,
-      'voucher_id' => (int)$voucher['voucher_id'],
-      'code' => $voucher['code'],
-      'discount_type' => $voucher['discount_type'],
-      'discount_value' => (float)$voucher['discount_value'],
-      'max_discount' => $voucher['max_discount'] !== null ? (float)$voucher['max_discount'] : null,
-      'min_order_value' => (float)$voucher['min_order_value'],
-      'message' => 'Áp dụng mã giảm giá thành công.',
-    ];
-  }
+    /**
+     * Tìm ID giỏ hàng của người dùng, nếu không có thì tạo mới
+     */
+    public function findCartIdByUser($userId)
+    {
+        $stmt = $this->conn->prepare("SELECT cart_id FROM carts WHERE user_id = :user_id LIMIT 1");
+        $stmt->execute(['user_id' => (int) $userId]);
+        $row = $stmt->fetch();
 
-  public function getSuggestedVouchers($limit = 3)
-  {
-    $stmt = $this->conn->prepare("
-      SELECT code, discount_type, discount_value
-      FROM vouchers
-      WHERE status = 1 AND start_date <= NOW() AND end_date >= NOW()
-      ORDER BY end_date ASC
-      LIMIT :limit
-    ");
-    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-    $stmt->execute();
+        if ($row) {
+            return (int) $row['cart_id'];
+        }
 
-    return $stmt->fetchAll();
-  }
+        // Tạo giỏ hàng mới nếu chưa có
+        $this->createCart($userId);
+        $stmt = $this->conn->prepare("SELECT cart_id FROM carts WHERE user_id = :user_id LIMIT 1");
+        $stmt->execute(['user_id' => (int) $userId]);
+        $row = $stmt->fetch();
 
-  public function getCheckoutCustomer($userId)
-  {
-    $stmt = $this->conn->prepare("SELECT full_name, email, phone, address FROM users WHERE user_id = :user_id LIMIT 1");
-    $stmt->execute(['user_id' => (int)$userId]);
-    $user = $stmt->fetch();
-
-    return [
-      'full_name' => $user['full_name'] ?? '',
-      'email' => $user['email'] ?? '',
-      'phone' => $user['phone'] ?? '',
-      'address' => $user['address'] ?? '',
-    ];
-  }
-
-  public function placeOrder($userId, $checkoutData, $voucherCode = '')
-  {
-    $cartId = $this->findCartIdByUser($userId);
-    if ($cartId <= 0) {
-      return ['ok' => false, 'message' => 'Giỏ hàng đang trống.'];
+        return (int) ($row['cart_id'] ?? 0);
     }
 
-    $cartItems = $this->getCartItems($userId);
-    if (empty($cartItems)) {
-      return ['ok' => false, 'message' => 'Giỏ hàng đang trống.'];
+    /**
+     * Tạo giỏ hàng mới
+     */
+    public function createCart($userId)
+    {
+        $stmt = $this->conn->prepare("INSERT INTO carts (user_id) VALUES (:user_id)");
+        return $stmt->execute(['user_id' => (int) $userId]);
     }
 
-    $validItems = [];
-    foreach ($cartItems as $item) {
-      if (!$item['is_available']) {
-        return ['ok' => false, 'message' => 'Có sản phẩm không còn kinh doanh, vui lòng kiểm tra lại giỏ hàng.'];
-      }
-      if ((int)$item['stock'] < (int)$item['quantity']) {
-        return ['ok' => false, 'message' => 'Số lượng một số sản phẩm vượt tồn kho, vui lòng kiểm tra lại giỏ hàng.'];
-      }
-      $validItems[] = $item;
-    }
-
-    $subtotal = 0;
-    foreach ($validItems as $item) {
-      $subtotal += (float)$item['line_total'];
-    }
-
-    $voucher = null;
-    $cleanVoucherCode = strtoupper(trim((string)$voucherCode));
-    if ($cleanVoucherCode !== '') {
-      $validatedVoucher = $this->validateVoucher($cleanVoucherCode, $subtotal);
-      if (empty($validatedVoucher['is_valid'])) {
-        return ['ok' => false, 'message' => $validatedVoucher['message'] ?? 'Mã giảm giá không hợp lệ.'];
-      }
-      $voucher = $validatedVoucher;
-    }
-
-    $totals = $this->calculateTotals($userId, $voucher);
-
-    if ($totals['total'] <= 0 && $totals['subtotal'] <= 0) {
-      return ['ok' => false, 'message' => 'Giỏ hàng không hợp lệ để thanh toán.'];
-    }
-
-    $orderCode = $this->generateOrderCode();
-
-    try {
-      $this->conn->beginTransaction();
-
-      $orderStmt = $this->conn->prepare("\n        INSERT INTO orders (\n          user_id, order_code, total_amount, voucher_id, discount_amount, payment_method_id, status_id, shipping_address, phone, note\n        ) VALUES (\n          :user_id, :order_code, :total_amount, :voucher_id, :discount_amount, :payment_method_id, :status_id, :shipping_address, :phone, :note\n        )\n      ");
-
-      $orderStmt->execute([
-        'user_id' => (int)$userId,
-        'order_code' => $orderCode,
-        'total_amount' => (float)$totals['total'],
-        'voucher_id' => $voucher['voucher_id'] ?? null,
-        'discount_amount' => (float)$totals['discount'],
-        'payment_method_id' => 1,
-        'status_id' => 1,
-        'shipping_address' => $checkoutData['shipping_address'],
-        'phone' => $checkoutData['phone'],
-        'note' => $checkoutData['note'] ?? null,
-      ]);
-
-      $orderId = (int)$this->conn->lastInsertId();
-
-      $itemStmt = $this->conn->prepare("\n        INSERT INTO order_items (order_id, book_id, quantity, price, subtotal)\n        VALUES (:order_id, :book_id, :quantity, :price, :subtotal)\n      ");
-
-      $stockStmt = $this->conn->prepare("\n        UPDATE books\n        SET stock = stock - :quantity\n        WHERE book_id = :book_id AND stock >= :quantity AND status = 1\n      ");
-
-      foreach ($validItems as $item) {
-        $quantity = (int)$item['quantity'];
-        $unitPrice = (float)$item['unit_price'];
-        $lineTotal = (float)$item['line_total'];
-
-        $itemStmt->execute([
-          'order_id' => $orderId,
-          'book_id' => (int)$item['book_id'],
-          'quantity' => $quantity,
-          'price' => $unitPrice,
-          'subtotal' => $lineTotal,
-        ]);
-
-        $stockStmt->execute([
-          'quantity' => $quantity,
-          'book_id' => (int)$item['book_id'],
-        ]);
-
-        if ($stockStmt->rowCount() === 0) {
-          throw new Exception('Không thể cập nhật tồn kho, vui lòng thử lại.');
+    /**
+     * Lấy số lượng sản phẩm trong giỏ
+     */
+    public function getItemCount($userId)
+    {
+        $cartId = $this->findCartIdByUser($userId);
+        if ($cartId <= 0) {
+            return 0;
         }
       }
 
@@ -486,68 +394,187 @@ class CartModel
       }
       return ['ok' => false, 'message' => $e->getMessage()];
     }
-  }
 
-  public function getOrderDetailByCode($userId, $orderCode)
-  {
-    $stmt = $this->conn->prepare("\n      SELECT\n        o.order_id,\n        o.order_code,\n        o.total_amount,\n        o.discount_amount,\n        o.shipping_address,\n        o.phone,\n        o.note,\n        o.created_at,\n        s.status_name,\n        pm.name AS payment_method\n      FROM orders o\n      LEFT JOIN order_status s ON s.status_id = o.status_id\n      LEFT JOIN payment_methods pm ON pm.payment_method_id = o.payment_method_id\n      WHERE o.user_id = :user_id AND o.order_code = :order_code\n      LIMIT 1\n    ");
-    $stmt->execute([
-      'user_id' => (int)$userId,
-      'order_code' => $orderCode,
-    ]);
-    $order = $stmt->fetch();
+    /**
+     * Lấy tất cả sản phẩm trong giỏ
+     */
+    public function getCartItems($userId)
+    {
+        $cartId = $this->findCartIdByUser($userId);
+        if ($cartId <= 0) {
+            return [];
+        }
 
-    if (!$order) {
-      return null;
+        $query = "
+            SELECT 
+                ci.cart_item_id,
+                ci.book_id,
+                ci.quantity,
+                ci.price,
+                b.title,
+                b.author,
+                b.thumbnail,
+                b.stock,
+                b.sale_price,
+                b.price as original_price
+            FROM cart_items ci
+            INNER JOIN books b ON ci.book_id = b.book_id
+            WHERE ci.cart_id = :cart_id
+            ORDER BY ci.cart_item_id DESC
+        ";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute(['cart_id' => $cartId]);
+
+        return $stmt->fetchAll();
     }
 
-    $itemsStmt = $this->conn->prepare("\n      SELECT\n        oi.book_id,\n        oi.quantity,\n        oi.price,\n        oi.subtotal,\n        b.title,\n        b.author,\n        b.thumbnail\n      FROM order_items oi\n      LEFT JOIN books b ON b.book_id = oi.book_id\n      WHERE oi.order_id = :order_id\n      ORDER BY oi.order_item_id ASC\n    ");
-    $itemsStmt->execute(['order_id' => (int)$order['order_id']]);
-    $order['items'] = $itemsStmt->fetchAll();
+    /**
+     * Thêm sản phẩm vào giỏ
+     */
+    public function addToCart($userId, $bookId, $quantity = 1)
+    {
+        try {
+            $cartId = $this->findCartIdByUser($userId);
+            if ($cartId <= 0) {
+                return false;
+            }
 
-    return $order;
-  }
+            // Lấy giá sách hiện tại
+            $bookStmt = $this->conn->prepare("SELECT sale_price, price FROM books WHERE book_id = :book_id");
+            $bookStmt->execute(['book_id' => (int) $bookId]);
+            $book = $bookStmt->fetch();
 
-  private function getBookForCart($bookId)
-  {
-    $stmt = $this->conn->prepare("
-      SELECT book_id, price, sale_price, stock, status
-      FROM books
-      WHERE book_id = :book_id
-      LIMIT 1
-    ");
-    $stmt->execute(['book_id' => (int)$bookId]);
+            if (!$book) {
+                return false;
+            }
 
-    $book = $stmt->fetch();
-    if (!$book || (int)$book['status'] !== 1) {
-      return null;
+            $price = $book['sale_price'] ?? $book['price'];
+
+            // Kiểm tra sản phẩm đã có trong giỏ chưa
+            $checkStmt = $this->conn->prepare("
+                SELECT cart_item_id, quantity FROM cart_items 
+                WHERE cart_id = :cart_id AND book_id = :book_id
+            ");
+            $checkStmt->execute(['cart_id' => $cartId, 'book_id' => (int) $bookId]);
+            $existingItem = $checkStmt->fetch();
+
+            if ($existingItem) {
+                // Update số lượng
+                $newQuantity = $existingItem['quantity'] + (int) $quantity;
+                $updateStmt = $this->conn->prepare("
+                    UPDATE cart_items 
+                    SET quantity = :quantity 
+                    WHERE cart_item_id = :cart_item_id
+                ");
+                return $updateStmt->execute([
+                    'quantity' => $newQuantity,
+                    'cart_item_id' => $existingItem['cart_item_id']
+                ]);
+            } else {
+                // Insert sản phẩm mới
+                $stmt = $this->conn->prepare("
+                    INSERT INTO cart_items (cart_id, book_id, quantity, price) 
+                    VALUES (:cart_id, :book_id, :quantity, :price)
+                ");
+                return $stmt->execute([
+                    'cart_id' => $cartId,
+                    'book_id' => (int) $bookId,
+                    'quantity' => (int) $quantity,
+                    'price' => $price
+                ]);
+            }
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
-    return $book;
-  }
+    /**
+     * Xoá sản phẩm khỏi giỏ
+     */
+    public function removeFromCart($userId, $cartItemId)
+    {
+        try {
+            $cartId = $this->findCartIdByUser($userId);
+            if ($cartId <= 0) {
+                return false;
+            }
 
-  private function findCartIdByUser($userId)
-  {
-    $stmt = $this->conn->prepare("SELECT cart_id FROM carts WHERE user_id = :user_id LIMIT 1");
-    $stmt->execute(['user_id' => (int)$userId]);
-    $cart = $stmt->fetch();
+            $stmt = $this->conn->prepare("
+                DELETE FROM cart_items 
+                WHERE cart_item_id = :cart_item_id AND cart_id = :cart_id
+            ");
+            return $stmt->execute([
+                'cart_item_id' => (int) $cartItemId,
+                'cart_id' => $cartId
+            ]);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 
-    return (int)($cart['cart_id'] ?? 0);
-  }
+    /**
+     * Cập nhật số lượng sản phẩm
+     */
+    public function updateQuantity($userId, $cartItemId, $quantity)
+    {
+        try {
+            $quantity = (int) $quantity;
+            if ($quantity <= 0) {
+                return $this->removeFromCart($userId, $cartItemId);
+            }
 
-  private function findCartItem($cartId, $bookId)
-  {
-    $stmt = $this->conn->prepare("SELECT quantity FROM cart_items WHERE cart_id = :cart_id AND book_id = :book_id LIMIT 1");
-    $stmt->execute([
-      'cart_id' => (int)$cartId,
-      'book_id' => (int)$bookId,
-    ]);
+            $cartId = $this->findCartIdByUser($userId);
+            if ($cartId <= 0) {
+                return false;
+            }
 
-    return $stmt->fetch();
-  }
+            $stmt = $this->conn->prepare("
+                UPDATE cart_items 
+                SET quantity = :quantity 
+                WHERE cart_item_id = :cart_item_id AND cart_id = :cart_id
+            ");
+            return $stmt->execute([
+                'quantity' => $quantity,
+                'cart_item_id' => (int) $cartItemId,
+                'cart_id' => $cartId
+            ]);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 
-  private function getEffectivePrice($book)
-  {
-    return $book['sale_price'] !== null ? (float)$book['sale_price'] : (float)$book['price'];
-  }
+    /**
+     * Xoá toàn bộ giỏ hàng
+     */
+    public function clearCart($userId)
+    {
+        try {
+            $cartId = $this->findCartIdByUser($userId);
+            if ($cartId <= 0) {
+                return false;
+            }
+
+            $stmt = $this->conn->prepare("DELETE FROM cart_items WHERE cart_id = :cart_id");
+            return $stmt->execute(['cart_id' => $cartId]);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Tính tổng tiền giỏ hàng
+     */
+    public function getTotalPrice($userId)
+    {
+        $items = $this->getCartItems($userId);
+        $total = 0;
+
+        foreach ($items as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        return $total;
+    }
 }
+?>

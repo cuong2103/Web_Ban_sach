@@ -18,4 +18,11 @@ match ($act) {
   'home' => (new HomeController())->home(),
   'books' => (new BookController())->list(),
   'book-detail' => (new BookController())->detail(),
+  
+  // ─── Cart ────────────────────────────────────────────────────────
+  'cart' => (new CartController())->view(),
+  'cart-add' => (new CartController())->add(),
+  'cart-remove' => (new CartController())->remove(),
+  'cart-update-qty' => (new CartController())->updateQuantity(),
+  'cart-clear' => (new CartController())->clear(),
 };
