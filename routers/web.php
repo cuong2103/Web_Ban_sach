@@ -18,4 +18,15 @@ match ($act) {
   'home' => (new HomeController())->home(),
   'books' => (new BookController())->list(),
   'book-detail' => (new BookController())->detail(),
+
+  // Cart
+  'cart' => (new CartController())->view(),
+  'cart-add' => (new CartController())->add(),
+  'cart-remove' => (new CartController())->remove(),
+
+  // Orders
+  'checkout' => (new OrderController())->checkout(),
+  'create-order' => (new OrderController())->create(),
+  'orders' => (new OrderController())->index(),
+  'order-detail' => (new OrderController())->detail(),
 };

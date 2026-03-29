@@ -231,4 +231,10 @@ class BookModel
     $stmt->execute();
     return $stmt->fetchAll();
   }
+
+  public function decreaseStock($bookId, $quantity)
+  {
+    $stmt = $this->conn->prepare("UPDATE books SET stock = GREATEST(0, stock - :quantity) WHERE book_id = :book_id");
+    return $stmt->execute(['quantity' => (int) $quantity, 'book_id' => (int) $bookId]);
+  }
 }
