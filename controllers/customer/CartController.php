@@ -28,27 +28,32 @@ class CartController
     }
 
     /**
-     * Thêm sản phẩm vào giỏ (API)
+     * Thêm sản phẩm vào giỏ (API hoặc Form submission hoặc Quick add)
      */
     public function add()
     {
-        header('Content-Type: application/json');
-
         // Kiểm tra đăng nhập
         if (!isset($_SESSION['currentUser'])) {
-            http_response_code(401);
-            echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập']);
-            exit;
+            Message::set('error', 'Vui lòng đăng nhập để thêm vào giỏ hàng.');
+            redirect('login');
         }
 
         $userId = $_SESSION['currentUser']['id'];
-        $bookId = (int) ($_POST['book_id'] ?? 0);
-        $quantity = (int) ($_POST['quantity'] ?? 1);
+        // Support 'id' from GET (quick add) or POST (form), and 'book_id' (AJAX)
+        $bookId = (int) ($_POST['id'] ?? $_POST['book_id'] ?? $_GET['id'] ?? 0);
+        $quantity = (int) ($_POST['quantity'] ?? $_GET['quantity'] ?? 1);
+        $buyNow = isset($_POST['buy_now']) && $_POST['buy_now'] == '1';
 
         // Validate input
         if (!$bookId || $quantity < 1) {
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ']);
+            if ($this->isAjax()) {
+                header('Content-Type: application/json');
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ']);
+            } else {
+                Message::set('error', 'Dữ liệu không hợp lệ.');
+                redirect('books');
+            }
             exit;
         }
 
@@ -57,16 +62,44 @@ class CartController
 
         if ($result) {
             $itemCount = $this->cartModel->getItemCount($userId);
-            echo json_encode([
-                'success' => true,
-                'message' => 'Đã thêm vào giỏ hàng',
-                'itemCount' => $itemCount
-            ]);
+            
+            // If AJAX request, return JSON
+            if ($this->isAjax()) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Đã thêm vào giỏ hàng',
+                    'itemCount' => $itemCount
+                ]);
+            } else {
+                // Form submission or quick add - redirect
+                Message::set('success', 'Sản phẩm đã được thêm vào giỏ hàng!');
+                if ($buyNow) {
+                    redirect('cart');
+                } else {
+                    redirect('cart');
+                }
+            }
         } else {
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Không thể thêm vào giỏ hàng']);
+            if ($this->isAjax()) {
+                header('Content-Type: application/json');
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Không thể thêm vào giỏ hàng']);
+            } else {
+                Message::set('error', 'Không thể thêm sản phẩm vào giỏ hàng.');
+                redirect('books');
+            }
         }
         exit;
+    }
+
+    /**
+     * Check if request is AJAX
+     */
+    private function isAjax()
+    {
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 
     /**
