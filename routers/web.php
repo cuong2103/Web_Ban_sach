@@ -29,4 +29,7 @@ match ($act) {
   'create-order' => (new OrderController())->create(),
   'orders' => (new OrderController())->index(),
   'order-detail' => (new OrderController())->detail(),
+
+  // Trang không tìm thấy cho mọi route không khớp
+  default => require_once './views/notFound.php',
 };
