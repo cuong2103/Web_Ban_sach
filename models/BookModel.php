@@ -183,4 +183,52 @@ class BookModel
     $stmt->execute();
     return $stmt->fetchAll();
   }
+  public function getSaleBooks($limit = 4)
+  {
+    $stmt = $this->conn->prepare("
+      SELECT 
+        b.book_id as id, b.title, b.author, b.price, b.sale_price, b.thumbnail, b.stock,
+        c.slug, c.category_id, c.name as category_name
+      FROM books b
+      LEFT JOIN categories c ON b.category_id = c.category_id
+      WHERE b.status = 1 AND b.sale_price IS NOT NULL AND b.sale_price < b.price
+      ORDER BY (b.price - b.sale_price) / b.price DESC
+      LIMIT :limit
+    ");
+    $stmt->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+  }
+  public function getNewBooks($limit = 4)
+  {
+    $stmt = $this->conn->prepare("
+      SELECT 
+        b.book_id as id, b.title, b.author, b.price, b.sale_price, b.thumbnail, b.stock,
+        c.slug, c.category_id, c.name as category_name
+      FROM books b
+      LEFT JOIN categories c ON b.category_id = c.category_id
+      WHERE b.status = 1
+      ORDER BY b.created_at DESC
+      LIMIT :limit
+    ");
+    $stmt->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+  }
+  public function getBestsellerBooks($limit = 4)
+  {
+    $stmt = $this->conn->prepare("
+      SELECT 
+        b.book_id as id, b.title, b.author, b.price, b.sale_price, b.thumbnail, b.stock, b.is_bestseller,
+        c.slug, c.category_id, c.name as category_name
+      FROM books b
+      LEFT JOIN categories c ON b.category_id = c.category_id
+      WHERE b.status = 1
+      ORDER BY b.is_bestseller DESC, b.stock ASC
+      LIMIT :limit
+    ");
+    $stmt->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+  }
 }
