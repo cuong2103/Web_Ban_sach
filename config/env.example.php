@@ -3,7 +3,7 @@
 // Biến môi trường, dùng chung toàn hệ thống
 // Khai báo dưới dạng HẰNG SỐ để không phải dùng $GLOBALS
 
-define('BASE_URL', 'http://quan-li-agile.test/');
+define('BASE_URL', 'agile/Web_Ban_sach/');
 define('UPLOADS_URL', BASE_URL . 'uploads/');
 define('DB_HOST', 'localhost');
 define('DB_PORT', 3306);
