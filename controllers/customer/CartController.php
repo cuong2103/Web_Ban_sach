@@ -348,5 +348,7 @@ class CartController
     }
 
     redirect('orders');
+    //thêm
+    
   }
 }
