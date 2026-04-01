@@ -74,4 +74,49 @@ class UserModel
       return false;
     }
   }
+
+  public function updateProfile($id, $data)
+  {
+    if (isset($data['avatar'])) {
+      $stmt = $this->conn->prepare("
+        UPDATE users
+        SET full_name = :fullname,
+            phone     = :phone,
+            address   = :address,
+            avatar    = :avatar
+        WHERE user_id = :id
+      ");
+      return $stmt->execute([
+        'fullname' => $data['fullname'],
+        'phone'    => $data['phone'],
+        'address'  => $data['address'] ?? null,
+        'avatar'   => $data['avatar'],
+        'id'       => $id,
+      ]);
+    } else {
+      $stmt = $this->conn->prepare("
+        UPDATE users
+        SET full_name = :fullname,
+            phone     = :phone,
+            address   = :address
+        WHERE user_id = :id
+      ");
+      return $stmt->execute([
+        'fullname' => $data['fullname'],
+        'phone'    => $data['phone'],
+        'address'  => $data['address'] ?? null,
+        'id'       => $id,
+      ]);
+    }
+  }
+
+  // Cập nhật mật khẩu
+  public function changePassword($id, $newPassword)
+  {
+    $stmt = $this->conn->prepare("UPDATE users SET password = :password WHERE user_id = :id");
+    return $stmt->execute([
+      'password' => password_hash($newPassword, PASSWORD_DEFAULT),
+      'id'       => $id,
+    ]);
+  }
 }

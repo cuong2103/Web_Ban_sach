@@ -153,4 +153,132 @@ class AuthController
     Message::set('success', 'Đã đăng xuất thành công.');
     redirect('login');
   }
+
+  // Profile
+  public function profile()
+  {
+    $userId = (int)($_SESSION['currentUser']['id'] ?? 0);
+    if ($userId <= 0) {
+      redirect('login');
+    }
+
+    $user = $this->userModel->findById($userId);
+    require_once './views/customer/profile.php';
+  }
+
+  public function updateProfile()
+  {
+    $userId = (int)($_SESSION['currentUser']['id'] ?? 0);
+    if ($userId <= 0) {
+      redirect('login');
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+      redirect('profile');
+    }
+
+    $fullname = trim($_POST['fullname'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+
+    $errors = validate([
+      'fullname' => $fullname,
+      'phone' => $phone,
+    ], [
+      'fullname' => 'required|min:3',
+      'phone' => 'required',
+    ]);
+
+    if (!empty($errors)) {
+      Message::set('error', 'Vui lòng kiểm tra lại thông tin (Họ tên tối đa, SĐT không được để trống).');
+      redirect('profile');
+    }
+
+    $data = [
+      'fullname' => $fullname,
+      'phone' => $phone,
+      'address' => $address,
+    ];
+
+    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+      $file = $_FILES['avatar'];
+      $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+      $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+      if (!in_array(strtolower($ext), $allowed)) {
+        Message::set('error', 'Ảnh đại diện sai định dạng.');
+        redirect('profile');
+      }
+      $filename = time() . '_' . rand(1000, 9999) . '.' . $ext;
+      $dest = './uploads/avatars/' . $filename;
+      
+      if (!is_dir('./uploads/avatars')) {
+        mkdir('./uploads/avatars', 0777, true);
+      }
+      if (move_uploaded_file($file['tmp_name'], $dest)) {
+        $data['avatar'] = '/uploads/avatars/' . $filename;
+      }
+    }
+
+    if ($this->userModel->updateProfile($userId, $data)) {
+      $user = $this->userModel->findById($userId);
+      $_SESSION['currentUser']['fullname'] = $user['fullname'];
+      $_SESSION['currentUser']['avatar'] = $user['avatar'];
+      Message::set('success', 'Cập nhật thông tin cá nhân thành công.');
+    } else {
+      Message::set('error', 'Cập nhật thất bại. Vui lòng thử lại.');
+    }
+
+    redirect('profile');
+  }
+
+  // đổi mật khẩu customer
+  public function updatePassword()
+  {
+    $userId = (int)($_SESSION['currentUser']['id'] ?? 0);
+    if ($userId <= 0) {
+      redirect('login');
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+      redirect('profile');
+    }
+
+    $oldPassword = $_POST['old_password'] ?? '';
+    $newPassword = $_POST['new_password'] ?? '';
+    $confirmPassword = $_POST['confirm_password'] ?? '';
+
+    $errors = validate([
+      'old_password' => $oldPassword,
+      'new_password' => $newPassword,
+      'confirm_password' => $confirmPassword,
+    ], [
+      'old_password' => 'required',
+      'new_password' => 'required|min:8',
+      'confirm_password' => 'required|min:8',
+    ]);
+
+    if (!empty($errors)) {
+      Message::set('error', 'Vui lòng nhập đầy đủ và chuẩn xác các trường mật khẩu.');
+      redirect('profile');
+    }
+
+    if ($newPassword !== $confirmPassword) {
+      Message::set('error', 'Mật khẩu mới không khớp xác nhận.');
+      redirect('profile');
+    }
+
+    $user = $this->userModel->findById($userId);
+    if (!$user || !password_verify($oldPassword, $user['password'])) {
+      Message::set('error', 'Mật khẩu hiện tại không chính xác.');
+      redirect('profile');
+    }
+
+    if ($this->userModel->changePassword($userId, $newPassword)) {
+      Message::set('success', 'Đổi mật khẩu thành công.');
+    } else {
+      Message::set('error', 'Không thể đổi mật khẩu, vui lòng thử lại.');
+    }
+
+    redirect('profile');
+  }
 }
