@@ -11,6 +11,8 @@ match ($act) {
   'check-login' => (new AuthController())->login(),
   'register' => (new AuthController())->formRegister(),
   'check-register' => (new AuthController())->register(),
+  'admin-login' => (new AuthController())->formAdminLogin(),
+  'check-admin-login' => (new AuthController())->adminLogin(),
   'logout' => (new AuthController())->logout(),
 
 
@@ -53,4 +55,18 @@ match ($act) {
   'admin-categories-edit' => (new AdminCategoryController())->edit(),
   'admin-categories-update' => (new AdminCategoryController())->update(),
   'admin-categories-delete' => (new AdminCategoryController())->delete(),
+  // ─── Admin ────────────────────────────────────────────────────────
+  'admin-dashboard' => (new DashboardController())->Dashboard(),
+    // ─── Admin: User Management ───────────────────────────────────────────────
+    'admin-users' => (new AdminUserController())->list(),
+    'admin-users-create' => (new AdminUserController())->create(),
+    'admin-users-store' => (new AdminUserController())->store(),
+    'admin-users-edit' => (new AdminUserController())->edit(),
+    'admin-users-update' => (new AdminUserController())->update(),
+    'admin-users-toggle-status' => (new AdminUserController())->toggleStatus(),
+
+
+      // ─── Error pages ──────────────────────────────────────────────────
+  '403' => require_once './views/forbidden.php',
+  default => require_once './views/notFound.php',
 };
