@@ -18,6 +18,11 @@ match ($act) {
   'home' => (new HomeController())->home(),
   'books' => (new BookController())->list(),
   'book-detail' => (new BookController())->detail(),
+
+  // profile customer
+  'profile' => (new AuthController())->profile(),
+  'profile-update' => (new AuthController())->updateProfile(),
+  'profile-password' => (new AuthController())->updatePassword(),
   
   // Cart
   'cart' => (new CartController())->index(),
