@@ -19,10 +19,14 @@ match ($act) {
   'books' => (new BookController())->list(),
   'book-detail' => (new BookController())->detail(),
   
-  // ─── Cart ────────────────────────────────────────────────────────
-  'cart' => (new CartController())->view(),
+  // Cart
+  'cart' => (new CartController())->index(),
   'cart-add' => (new CartController())->add(),
+  'cart-update' => (new CartController())->update(),
   'cart-remove' => (new CartController())->remove(),
-  'cart-update-qty' => (new CartController())->updateQuantity(),
-  'cart-clear' => (new CartController())->clear(),
+  'cart-apply-voucher' => (new CartController())->applyVoucher(),
+  'cart-clear-voucher' => (new CartController())->clearVoucher(),
+  'checkout' => (new CartController())->checkout(),
+  'checkout-place' => (new CartController())->placeOrder(),
+  'checkout-success' => (new CartController())->success(),
 };
