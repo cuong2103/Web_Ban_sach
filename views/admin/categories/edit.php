@@ -116,6 +116,43 @@ include_once './views/components/sidebar.php';
                             <i data-lucide="x" class="w-4 h-4"></i> Hủy
                         </a>
                     </div>
+
+                    <!-- Thông tin chi tiết -->
+                    <div class="pt-4 border-t border-gray-100 mt-4">
+                        <button type="button" id="toggleDetails"
+                            class="w-full flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors text-sm font-medium text-gray-700 mb-3">
+                            <span class="flex items-center gap-2">
+                                <i data-lucide="info" class="w-4 h-4"></i>
+                                Thông tin chi tiết
+                            </span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 transform transition-transform"
+                                id="toggleIcon"></i>
+                        </button>
+
+                        <div id="detailsContent" class="space-y-3 text-xs hidden">
+                            <!-- ID -->
+                            <div class="bg-gray-50 rounded-lg p-3">
+                                <p class="text-gray-500">ID danh mục</p>
+                                <p class="text-gray-900 font-semibold mt-1"><?= $category['id'] ?></p>
+                            </div>
+
+                            <!-- Ngày tạo -->
+                            <div class="bg-gray-50 rounded-lg p-3">
+                                <p class="text-gray-500">Ngày tạo</p>
+                                <p class="text-gray-900 font-semibold mt-1">
+                                    <?= date('d/m/Y H:i', strtotime($category['created_at'])) ?>
+                                </p>
+                            </div>
+
+                            <!-- Ngày cập nhật -->
+                            <div class="bg-gray-50 rounded-lg p-3">
+                                <p class="text-gray-500">Lần cập nhật gần nhất</p>
+                                <p class="text-gray-900 font-semibold mt-1">
+                                    <?= date('d/m/Y H:i', strtotime($category['updated_at'])) ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
@@ -123,5 +160,16 @@ include_once './views/components/sidebar.php';
 </main>
 
 <script>
+const toggleDetailsBtn = document.getElementById('toggleDetails');
+const detailsContent = document.getElementById('detailsContent');
+const toggleIcon = document.getElementById('toggleIcon');
+
+toggleDetailsBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    detailsContent.classList.toggle('hidden');
+    toggleIcon.style.transform = detailsContent.classList.contains('hidden') ? 'rotate(0deg)' :
+    'rotate(180deg)';
+});
+
 lucide.createIcons();
 </script>
