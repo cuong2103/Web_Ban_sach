@@ -23,17 +23,58 @@ function connectDB()
     }
 }
 
-function uploadFile($file, $folderSave)
+function uploadFile($file, $folderSave, &$error = null)
 {
-    $file_upload = $file;
-    $pathStorage = $folderSave . rand(10000, 99999) . $file_upload['name'];
+    $error = null;
+    $fileUpload = $file;
 
-    $tmp_file = $file_upload['tmp_name'];
-    $pathSave = PATH_ROOT . $pathStorage; // Đường dẫn tuyệt đối của file
-
-    if (move_uploaded_file($tmp_file, $pathSave)) {
-        return $pathStorage;
+    if (($fileUpload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        $error = 'File upload thất bại (mã lỗi: ' . (int) ($fileUpload['error'] ?? -1) . ').';
+        return null;
     }
+
+    $tmpFile = $fileUpload['tmp_name'] ?? '';
+    if (!$tmpFile || !is_uploaded_file($tmpFile)) {
+        $error = 'Không tìm thấy file tạm hoặc file upload không hợp lệ.';
+        return null;
+    }
+
+    $originalName = (string) ($fileUpload['name'] ?? '');
+    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    if ($extension === '') {
+        $extension = 'bin';
+    }
+
+    $normalizedFolder = '/' . trim((string) $folderSave, '/') . '/';
+    $absoluteFolder = rtrim(PATH_ROOT, '\\/') . str_replace('/', DIRECTORY_SEPARATOR, $normalizedFolder);
+
+    if (!is_dir($absoluteFolder) && !mkdir($absoluteFolder, 0755, true)) {
+        $error = 'Không thể tạo thư mục lưu ảnh.';
+        return null;
+    }
+
+    $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+    $safeBaseName = preg_replace('/[^A-Za-z0-9_-]/', '-', $baseName);
+    $safeBaseName = trim((string) $safeBaseName, '-');
+    if ($safeBaseName === '') {
+        $safeBaseName = 'image';
+    }
+
+    try {
+        $random = bin2hex(random_bytes(4));
+    } catch (Exception $e) {
+        $random = (string) rand(10000, 99999);
+    }
+
+    $fileName = date('YmdHis') . '-' . $random . '-' . $safeBaseName . '.' . $extension;
+    $relativePath = $normalizedFolder . $fileName;
+    $absolutePath = rtrim(PATH_ROOT, '\\/') . str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+
+    if (move_uploaded_file($tmpFile, $absolutePath)) {
+        return $relativePath;
+    }
+
+    $error = 'Không thể lưu file ảnh vào thư mục uploads.';
     return null;
 }
 

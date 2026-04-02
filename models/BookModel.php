@@ -285,11 +285,6 @@ class BookModel
       return ['ok' => false, 'message' => $e->getMessage()];
     }
   }
-  public function addBookImage($bookId, $imageUrl)
-  {
-    $stmt = $this->conn->prepare("INSERT INTO book_images (book_id, image_url) VALUES (:book_id, :image_url)");
-    return $stmt->execute(['book_id' => $bookId, 'image_url' => $imageUrl]);
-  }
   public function getAdminAll($search = '', $category = '', $status_filter = '', $limit = 10, $offset = 0)
   {
     $query = "
