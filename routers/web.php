@@ -46,4 +46,6 @@ match ($act) {
   'admin-books-delete' => (new AdminBookController())->delete(),
   'admin-books-detail' => (new AdminBookController())->detail(),
   'admin-books-toggle-status' => (new AdminBookController())->toggleStatus(),
+
+  'admin-categories' => (new AdminCategoryController())->list(),
 };

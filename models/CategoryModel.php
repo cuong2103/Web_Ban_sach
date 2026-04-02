@@ -64,5 +64,38 @@ class CategoryModel
 
         return $stmt->fetchAll();
     }
+
+    public function countAll($search = '', $date = '')
+    {
+        $query = "
+      SELECT COUNT(*) as total
+      FROM categories
+      WHERE 1=1
+    ";
+
+        if (!empty($search)) {
+            $query .= " AND (name LIKE ? OR slug LIKE ?)";
+        }
+
+        if (!empty($date)) {
+            $query .= " AND DATE(created_at) = ?";
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        $paramIndex = 1;
+        if (!empty($search)) {
+            $stmt->bindValue($paramIndex++, '%' . $search . '%', PDO::PARAM_STR);
+            $stmt->bindValue($paramIndex++, '%' . $search . '%', PDO::PARAM_STR);
+        }
+
+        if (!empty($date)) {
+            $stmt->bindValue($paramIndex++, $date, PDO::PARAM_STR);
+        }
+
+        $stmt->execute();
+
+        return $stmt->fetch()['total'] ?? 0;
+    }
 }
 ?>
