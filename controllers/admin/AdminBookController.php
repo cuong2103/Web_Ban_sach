@@ -98,10 +98,11 @@ class AdminBookController
             // Thumbnail Upload
             $thumbnailPath = '';
             if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] == UPLOAD_ERR_OK) {
-                $thumbnailPath = uploadFile($_FILES['thumbnail'], '/uploads/books/');
+                $uploadError = null;
+                $thumbnailPath = uploadFile($_FILES['thumbnail'], '/uploads/books/', $uploadError);
                 if (!$thumbnailPath) {
                     $_SESSION['old'] = $_POST;
-                    Message::set('error', 'Ảnh bìa không hợp lệ hoặc quá lớn. Chỉ chấp nhận JPG, PNG, WEBP.');
+                    Message::set('error', $uploadError ?: 'Tải file thất bại, vui lòng thử lại.');
                     redirect('admin-books-create');
                 }
             }
@@ -230,12 +231,17 @@ class AdminBookController
 
             // Thumbnail Upload (ảnh mới)
             if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] == UPLOAD_ERR_OK) {
-                $thumbnailPath = uploadFile($_FILES['thumbnail'], '/uploads/books/');
+                $uploadError = null;
+                $thumbnailPath = uploadFile($_FILES['thumbnail'], '/uploads/books/', $uploadError);
                 if ($thumbnailPath) {
                     // Xóa ảnh cũ
                     if ($book['thumbnail'])
                         deleteFile($book['thumbnail']);
                     $data['thumbnail'] = $thumbnailPath;
+                } else {
+                    $_SESSION['old'] = $_POST;
+                    Message::set('error', $uploadError ?: 'Tải file thất bại, vui lòng thử lại.');
+                    redirect('admin-books-edit&id=' . $id);
                 }
             }
 

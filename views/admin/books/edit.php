@@ -208,11 +208,10 @@ include_once './views/components/sidebar.php';
                                         <div
                                             class="relative bg-transparent rounded-md font-medium text-[#4CAF50] hover:text-green-600 focus-within:outline-none">
                                             <span>Tải ảnh mới lên</span>
-                                            <input id="thumbnail" name="thumbnail" type="file" class="sr-only"
-                                                accept="image/*">
+                                            <input id="thumbnail" name="thumbnail" type="file" class="sr-only">
                                         </div>
                                     </div>
-                                    <p class="text-xs text-gray-500 mt-2">PNG, JPG, WEBP tối đa 2MB</p>
+                                    <p class="text-xs text-gray-500 mt-2">Hỗ trợ mọi định dạng file</p>
                                 </div>
                             </label>
                             <!-- Khu vực review ảnh bìa đã chọn -->
@@ -244,8 +243,7 @@ include_once './views/components/sidebar.php';
                             class="cursor-pointer text-sm font-medium text-[#4CAF50] hover:text-green-600">
                             Thêm ảnh
                         </label>
-                        <input id="gallery" name="gallery_images[]" type="file" multiple class="sr-only"
-                            accept="image/*">
+                        <input id="gallery" name="gallery_images[]" type="file" multiple class="sr-only">
                     </div>
 
                     <div id="gallery-preview-container" class="grid grid-cols-3 gap-3">
@@ -381,24 +379,7 @@ include_once './views/components/sidebar.php';
             return false;
         }
 
-        // Kiểm tra file thumbnail size
-        if (thumbnailInput.files && thumbnailInput.files[0]) {
-            if (thumbnailInput.files[0].size > 2 * 1024 * 1024) {
-                e.preventDefault();
-                alert('Ảnh bìa không được vượt quá 2MB!');
-                return false;
-            }
-        }
-
-        // Kiểm tra gallery files size
-        const currentGalleryFiles = galleryInput.files;
-        for (let i = 0; i < currentGalleryFiles.length; i++) {
-            if (currentGalleryFiles[i].size > 2 * 1024 * 1024) {
-                e.preventDefault();
-                alert(`Ảnh minh họa "${currentGalleryFiles[i].name}" vượt quá 2MB!`);
-                return false;
-            }
-        }
+        // Không giới hạn dung lượng/định dạng file theo yêu cầu.
     });
 
 </script>
