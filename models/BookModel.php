@@ -290,4 +290,82 @@ class BookModel
     $stmt = $this->conn->prepare("INSERT INTO book_images (book_id, image_url) VALUES (:book_id, :image_url)");
     return $stmt->execute(['book_id' => $bookId, 'image_url' => $imageUrl]);
   }
+  public function getAdminAll($search = '', $category = '', $status_filter = '', $limit = 10, $offset = 0)
+  {
+    $query = "
+      SELECT 
+        b.*,
+        c.name as category_name
+      FROM books b
+      LEFT JOIN categories c ON b.category_id = c.category_id
+      WHERE 1=1
+    ";
+
+    $params = [];
+    if (!empty($search)) {
+      $query .= " AND (b.title LIKE ? OR b.author LIKE ?)";
+      $params[] = '%' . $search . '%';
+      $params[] = '%' . $search . '%';
+    }
+
+    if (!empty($category)) {
+      $query .= " AND b.category_id = ?";
+      $params[] = $category;
+    }
+
+    if ($status_filter !== '') {
+      $query .= " AND b.status = ?";
+      $params[] = (int) $status_filter;
+    }
+
+    $query .= " ORDER BY b.created_at DESC LIMIT ? OFFSET ?";
+
+    $stmt = $this->conn->prepare($query);
+
+    $paramIndex = 1;
+    foreach ($params as $param) {
+      $stmt->bindValue($paramIndex++, $param, PDO::PARAM_STR);
+    }
+
+    $stmt->bindValue($paramIndex++, (int) $limit, PDO::PARAM_INT);
+    $stmt->bindValue($paramIndex++, (int) $offset, PDO::PARAM_INT);
+
+    $stmt->execute();
+    return $stmt->fetchAll();
+  }
+  public function countAdminAll($search = '', $category = '', $status_filter = '')
+  {
+    $query = "
+      SELECT COUNT(*) as total
+      FROM books b
+      WHERE 1=1
+    ";
+
+    $params = [];
+    if (!empty($search)) {
+      $query .= " AND (b.title LIKE ? OR b.author LIKE ?)";
+      $params[] = '%' . $search . '%';
+      $params[] = '%' . $search . '%';
+    }
+
+    if (!empty($category)) {
+      $query .= " AND b.category_id = ?";
+      $params[] = $category;
+    }
+
+    if ($status_filter !== '') {
+      $query .= " AND b.status = ?";
+      $params[] = (int) $status_filter;
+    }
+
+    $stmt = $this->conn->prepare($query);
+
+    $paramIndex = 1;
+    foreach ($params as $param) {
+      $stmt->bindValue($paramIndex++, $param, PDO::PARAM_STR);
+    }
+
+    $stmt->execute();
+    return $stmt->fetch()['total'] ?? 0;
+  }
 }
