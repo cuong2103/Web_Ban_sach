@@ -382,4 +382,69 @@ class BookModel
     $stmt->execute(['id' => $id]);
     return $stmt->fetch();
   }
+  public function update($id, $data)
+  {
+    try {
+      $sql = "
+        UPDATE books SET 
+          category_id = :category_id,
+          title = :title,
+          author = :author,
+          publisher = :publisher,
+          price = :price,
+          sale_price = :sale_price,
+          description = :description,
+          weight = :weight,
+          dimensions = :dimensions,
+          cover_type = :cover_type,
+          stock = :stock,
+          status = :status,
+          is_featured = :is_featured,
+          is_bestseller = :is_bestseller,
+          updated_at = NOW()
+      ";
+
+      $params = [
+        ':category_id' => (int) $data['category_id'],
+        ':title' => trim($data['title']),
+        ':author' => trim($data['author']),
+        ':publisher' => trim($data['publisher'] ?? ''),
+        ':price' => (float) $data['price'],
+        ':sale_price' => !empty($data['sale_price']) ? (float) $data['sale_price'] : null,
+        ':description' => trim($data['description'] ?? ''),
+        ':weight' => trim($data['weight'] ?? ''),
+        ':dimensions' => trim($data['dimensions'] ?? ''),
+        ':cover_type' => $data['cover_type'] ?? 'Bìa mềm',
+        ':stock' => (int) ($data['stock'] ?? 0),
+        ':status' => (int) ($data['status'] ?? 1),
+        ':is_featured' => (int) ($data['is_featured'] ?? 0),
+        ':is_bestseller' => (int) ($data['is_bestseller'] ?? 0),
+        ':id' => $id
+      ];
+
+      if (!empty($data['thumbnail'])) {
+        $sql .= ", thumbnail = :thumbnail";
+        $params[':thumbnail'] = $data['thumbnail'];
+      }
+
+      $sql .= " WHERE book_id = :id";
+
+      $stmt = $this->conn->prepare($sql);
+      $stmt->execute($params);
+
+      return ['ok' => true, 'message' => 'Cập nhật sách thành công'];
+    } catch (Exception $e) {
+      return ['ok' => false, 'message' => $e->getMessage()];
+    }
+  }
+  public function deleteBookImage($imageId)
+  {
+    $stmt = $this->conn->prepare("DELETE FROM book_images WHERE image_id = :image_id");
+    return $stmt->execute(['image_id' => $imageId]);
+  }
+  public function addBookImage($bookId, $imageUrl)
+  {
+    $stmt = $this->conn->prepare("INSERT INTO book_images (book_id, image_url) VALUES (:book_id, :image_url)");
+    return $stmt->execute(['book_id' => $bookId, 'image_url' => $imageUrl]);
+  }
 }
