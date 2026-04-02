@@ -116,5 +116,24 @@ class CategoryModel
         $stmt->execute(['slug' => $slug]);
         return $stmt->fetch();
     }
+
+    public function findById($id)
+    {
+        $stmt = $this->conn->prepare("
+      SELECT 
+        category_id as id,
+        name,
+        slug,
+        description,
+        status,
+        created_at,
+        updated_at
+      FROM categories
+      WHERE category_id = :id
+      LIMIT 1
+    ");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
+    }
 }
 ?>
