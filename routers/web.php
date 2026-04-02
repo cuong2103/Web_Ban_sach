@@ -48,4 +48,9 @@ match ($act) {
   'admin-books-toggle-status' => (new AdminBookController())->toggleStatus(),
 
   'admin-categories' => (new AdminCategoryController())->list(),
+  'admin-categories-create' => (new AdminCategoryController())->create(),
+  'admin-categories-store' => (new AdminCategoryController())->store(),
+  'admin-categories-edit' => (new AdminCategoryController())->edit(),
+  'admin-categories-update' => (new AdminCategoryController())->update(),
+  'admin-categories-delete' => (new AdminCategoryController())->delete(),
 };

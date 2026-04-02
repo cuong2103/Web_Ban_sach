@@ -48,6 +48,10 @@ include_once './views/components/sidebar.php';
                     </span> danh mục trong hệ thống
                 </p>
             </div>
+            <a href="<?= BASE_URL ?>?act=admin-categories-create"
+                class="px-5 py-2.5 bg-[#4CAF50] text-white rounded-xl hover:bg-green-600 transition-colors font-medium flex items-center gap-2 shadow-sm">
+                <i data-lucide="plus" class="w-4 h-4"></i> Thêm danh mục
+            </a>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -88,15 +92,18 @@ include_once './views/components/sidebar.php';
                             <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Slug</th>
                             <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Trạng thái</th>
                             <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ngày tạo</th>
+                            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         <?php if (empty($categories)): ?>
                             <tr>
-                                <td colspan="4" class="px-6 py-14 text-center text-gray-500">
+                                <td colspan="5" class="px-6 py-14 text-center text-gray-500">
                                     <div class="flex flex-col items-center justify-center gap-3">
                                         <i data-lucide="inbox" class="w-10 h-10 text-gray-300"></i>
                                         <p class="text-sm">Không tìm thấy danh mục nào.</p>
+                                        <a href="<?= BASE_URL ?>?act=admin-categories-create"
+                                            class="text-sm text-[#4CAF50] hover:underline font-medium">+ Thêm danh mục mới</a>
                                     </div>
                                 </td>
                             </tr>
@@ -131,6 +138,22 @@ include_once './views/components/sidebar.php';
                                     <!-- Ngày tạo -->
                                     <td class="px-6 py-4 text-sm text-gray-500">
                                         <?= date('d/m/Y H:i', strtotime($category['created_at'])) ?>
+                                    </td>
+
+                                    <!-- Thao tác -->
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex justify-end gap-2">
+                                            <a href="<?= BASE_URL ?>?act=admin-categories-edit&id=<?= $category['id'] ?>"
+                                                class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap">
+                                                <i data-lucide="edit" class="w-3.5 h-3.5"></i> Sửa
+                                            </a>
+
+                                            <a href="<?= BASE_URL ?>?act=admin-categories-delete&id=<?= $category['id'] ?>"
+                                                onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');"
+                                                class="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap">
+                                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Xóa
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
