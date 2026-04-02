@@ -231,4 +231,16 @@ class BookModel
     $stmt->execute();
     return $stmt->fetchAll();
   }
+  public function getDistinctAuthors()
+  {
+    $stmt = $this->conn->prepare("SELECT DISTINCT author FROM books WHERE author != '' ORDER BY author ASC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+  }
+  public function getDistinctPublishers()
+  {
+    $stmt = $this->conn->prepare("SELECT DISTINCT publisher FROM books WHERE publisher != '' ORDER BY publisher ASC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+  }
 }
