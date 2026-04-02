@@ -116,7 +116,7 @@ function validate($data, $rules)
                     // nếu là mảng
                     if (is_array($data[$field])) {
                         foreach ($data[$field] as $i => $value) {
-                            if (trim((string)$value) === '') {
+                            if (trim((string) $value) === '') {
                                 $errors[$field][$i][] = "Trường này bắt buộc phải nhập.";
                             }
                         }
@@ -131,12 +131,12 @@ function validate($data, $rules)
                     $errors[$field][] = "Trường này phải là email hợp lệ.";
                 }
             } elseif (strpos($rule, 'min:') === 0) {
-                $min = (int)explode(':', $rule)[1];
+                $min = (int) explode(':', $rule)[1];
                 if (isset($data[$field]) && strlen($data[$field]) < $min) {
                     $errors[$field][] = "Trường này phải có ít nhất $min ký tự.";
                 }
             } elseif (strpos($rule, 'max:') === 0) {
-                $max = (int)explode(':', $rule)[1];
+                $max = (int) explode(':', $rule)[1];
                 if (isset($data[$field]) && strlen($data[$field]) > $max) {
                     $errors[$field][] = "Trường này không được vượt quá $max ký tự.";
                 }

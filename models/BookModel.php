@@ -243,4 +243,51 @@ class BookModel
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_COLUMN);
   }
+  public function create($data)
+  {
+    try {
+      $stmt = $this->conn->prepare("
+        INSERT INTO books (
+          category_id, title, author, publisher, price, sale_price, 
+          description, thumbnail, weight, dimensions, cover_type, 
+          stock, status, is_featured, is_bestseller, created_at, updated_at
+        ) VALUES (
+          :category_id, :title, :author, :publisher, :price, :sale_price, 
+          :description, :thumbnail, :weight, :dimensions, :cover_type, 
+          :stock, :status, :is_featured, :is_bestseller, NOW(), NOW()
+        )
+      ");
+
+      $stmt->execute([
+        ':category_id' => (int) $data['category_id'],
+        ':title' => trim($data['title']),
+        ':author' => trim($data['author']),
+        ':publisher' => trim($data['publisher'] ?? ''),
+        ':price' => (float) $data['price'],
+        ':sale_price' => !empty($data['sale_price']) ? (float) $data['sale_price'] : null,
+        ':description' => trim($data['description'] ?? ''),
+        ':thumbnail' => trim($data['thumbnail'] ?? ''),
+        ':weight' => trim($data['weight'] ?? ''),
+        ':dimensions' => trim($data['dimensions'] ?? ''),
+        ':cover_type' => $data['cover_type'] ?? 'Bìa mềm',
+        ':stock' => (int) ($data['stock'] ?? 0),
+        ':status' => (int) ($data['status'] ?? 1),
+        ':is_featured' => (int) ($data['is_featured'] ?? 0),
+        ':is_bestseller' => (int) ($data['is_bestseller'] ?? 0),
+      ]);
+
+      return [
+        'ok' => true,
+        'id' => $this->conn->lastInsertId(),
+        'message' => 'Thêm sách thành công'
+      ];
+    } catch (Exception $e) {
+      return ['ok' => false, 'message' => $e->getMessage()];
+    }
+  }
+  public function addBookImage($bookId, $imageUrl)
+  {
+    $stmt = $this->conn->prepare("INSERT INTO book_images (book_id, image_url) VALUES (:book_id, :image_url)");
+    return $stmt->execute(['book_id' => $bookId, 'image_url' => $imageUrl]);
+  }
 }
