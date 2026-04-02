@@ -192,6 +192,11 @@ if ($isLoggedIn) {
                             <a href="<?= BASE_URL ?>?act=orders" class="relative z-10 flex items-center gap-2.5 px-3 py-2.5 text-sm font-bold text-gray-700 hover:bg-green-50 hover:text-[#4CAF50] rounded-xl mt-1 transition-colors">
                                 <i data-lucide="receipt" class="w-4 h-4"></i> Lịch sử đơn hàng
                             </a>
+                            <?php if ($currentUser && $currentUser['roles'] == 1): ?>
+                            <a href="<?= BASE_URL ?>?act=admin-books" class="relative z-10 flex items-center gap-2.5 px-3 py-2.5 text-sm font-bold text-blue-600 hover:bg-blue-50 hover:text-blue-700 rounded-xl mt-1 transition-colors">
+                                <i data-lucide="settings" class="w-4 h-4"></i> Quản trị viên
+                            </a>
+                            <?php endif; ?>
                             <div class="h-px w-full bg-gray-100 my-1 relative z-10"></div>
                             <a href="<?= BASE_URL ?>?act=logout" class="relative z-10 flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-colors">
                                 <i data-lucide="log-out" class="w-4 h-4 text-red-400"></i> Đăng xuất
