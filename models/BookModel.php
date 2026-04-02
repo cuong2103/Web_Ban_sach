@@ -447,4 +447,24 @@ class BookModel
     $stmt = $this->conn->prepare("INSERT INTO book_images (book_id, image_url) VALUES (:book_id, :image_url)");
     return $stmt->execute(['book_id' => $bookId, 'image_url' => $imageUrl]);
   }
+  public function delete($id)
+  {
+    try {
+      $stmt = $this->conn->prepare("DELETE FROM books WHERE book_id = :id");
+      $stmt->execute(['id' => $id]);
+      return ['ok' => true, 'message' => 'Xóa sách thành công'];
+    } catch (Exception $e) {
+      return ['ok' => false, 'message' => 'Không thể xóa sách này vì đã có đơn hàng hoặc liên kết khác ràng buộc.'];
+    }
+  }
+  public function toggleStatus($id)
+  {
+    try {
+      $stmt = $this->conn->prepare("UPDATE books SET status = IF(status = 1, 0, 1), updated_at = NOW() WHERE book_id = :id");
+      $stmt->execute(['id' => $id]);
+      return ['ok' => true, 'message' => 'Cập nhật trạng thái thành công'];
+    } catch (Exception $e) {
+      return ['ok' => false, 'message' => $e->getMessage()];
+    }
+  }
 }
