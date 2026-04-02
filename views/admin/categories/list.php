@@ -48,6 +48,10 @@ include_once './views/components/sidebar.php';
                     </span> danh mục trong hệ thống
                 </p>
             </div>
+            <a href="<?= BASE_URL ?>?act=admin-categories-create"
+                class="px-5 py-2.5 bg-[#4CAF50] text-white rounded-xl hover:bg-green-600 transition-colors font-medium flex items-center gap-2 shadow-sm">
+                <i data-lucide="plus" class="w-4 h-4"></i> Thêm danh mục
+            </a>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -97,6 +101,8 @@ include_once './views/components/sidebar.php';
                                     <div class="flex flex-col items-center justify-center gap-3">
                                         <i data-lucide="inbox" class="w-10 h-10 text-gray-300"></i>
                                         <p class="text-sm">Không tìm thấy danh mục nào.</p>
+                                        <a href="<?= BASE_URL ?>?act=admin-categories-create"
+                                            class="text-sm text-[#4CAF50] hover:underline font-medium">+ Thêm danh mục mới</a>
                                     </div>
                                 </td>
                             </tr>
