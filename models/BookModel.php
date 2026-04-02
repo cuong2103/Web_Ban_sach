@@ -368,4 +368,18 @@ class BookModel
     $stmt->execute();
     return $stmt->fetch()['total'] ?? 0;
   }
+  public function getAdminById($id)
+  {
+    $stmt = $this->conn->prepare("
+      SELECT 
+        b.*,
+        c.name as category_name
+      FROM books b
+      LEFT JOIN categories c ON b.category_id = c.category_id
+      WHERE b.book_id = :id
+      LIMIT 1
+    ");
+    $stmt->execute(['id' => $id]);
+    return $stmt->fetch();
+  }
 }
