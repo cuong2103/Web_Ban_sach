@@ -37,6 +37,11 @@ match ($act) {
   'checkout-place' => (new CartController())->placeOrder(),
   'checkout-success' => (new CartController())->success(),
 
+  // Orders
+  // 'orders' => (new CartController())->history(),
+  // 'order-detail' => (new CartController())->orderDetail(),
+  // 'order-cancel' => (new CartController())->cancelOrder(),
+
   // ================================
   // THÊM ROUTES MỚI Ở ĐÂY
   // ================================
