@@ -8,6 +8,26 @@ class UserModel
     $this->conn = connectDB();
   }
 
+  public function getAll()
+  {
+    $stmt = $this->conn->prepare("
+      SELECT 
+        user_id as id, 
+        role_id as roles, 
+        full_name as fullname, 
+        email, 
+        password, 
+        phone, 
+        avatar, 
+        status, 
+        created_at
+      FROM users 
+      ORDER BY created_at DESC
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll();
+  }
+
   public function findByEmail($email)
   {
     $stmt = $this->conn->prepare("
@@ -27,6 +47,26 @@ class UserModel
       LIMIT 1
     ");
     $stmt->execute(['email' => $email]);
+    return $stmt->fetch();
+  }
+
+  public function findByPhone($phone, $excludeId = null)
+  {
+    if ($excludeId) {
+      $stmt = $this->conn->prepare("
+        SELECT user_id as id FROM users
+        WHERE phone = :phone AND user_id != :exclude_id
+        LIMIT 1
+      ");
+      $stmt->execute(['phone' => $phone, 'exclude_id' => $excludeId]);
+    } else {
+      $stmt = $this->conn->prepare("
+        SELECT user_id as id FROM users
+        WHERE phone = :phone
+        LIMIT 1
+      ");
+      $stmt->execute(['phone' => $phone]);
+    }
     return $stmt->fetch();
   }
 
@@ -54,25 +94,65 @@ class UserModel
 
   public function create($data)
   {
+    $roleId = 2;
+    if (isset($data['roles']) && $data['roles'] === 'admin') {
+      $roleId = 1;
+    } elseif (isset($data['roles']) && $data['roles'] === 'customer') {
+      $roleId = 2;
+    }
+
     try {
       $stmt = $this->conn->prepare("
         INSERT INTO users (role_id, full_name, email, password, phone, address, status, avatar)
         VALUES (:role_id, :fullname, :email, :password, :phone, :address, :status, :avatar)
       ");
       $stmt->execute([
-        'role_id'  => 2, // Always Customer for client registration
+        'role_id'  => $roleId,
         'fullname' => $data['fullname'],
         'email'    => $data['email'],
         'password' => $data['password'],
         'phone'    => $data['phone'] ?? null,
-        'address'  => null,
-        'status'   => 1, // Active by default
-        'avatar'   => null,
+        'address'  => $data['address'] ?? null,
+        'status'   => $data['status'] ?? 1,
+        'avatar'   => $data['avatar'] ?? null,
       ]);
       return $this->conn->lastInsertId();
     } catch (PDOException $e) {
       return false;
     }
+  }
+
+  // Cập nhật thông tin cá nhân (không bao gồm mật khẩu)
+  public function update($id, $data)
+  {
+    $roleId = $data['roles'];
+    if ($data['roles'] === 'admin') {
+      $roleId = 1;
+    } elseif ($data['roles'] === 'customer') {
+      $roleId = 2;
+    }
+
+    $stmt = $this->conn->prepare("
+      UPDATE users
+      SET full_name = :fullname,
+          email     = :email,
+          phone     = :phone,
+          address   = :address,
+          role_id   = :role_id,
+          status    = :status,
+          avatar    = :avatar
+      WHERE user_id = :id
+    ");
+    return $stmt->execute([
+      'fullname' => $data['fullname'],
+      'email'    => $data['email'],
+      'phone'    => $data['phone'] ?? null,
+      'address'  => $data['address'] ?? null,
+      'role_id'  => $roleId,
+      'status'   => $data['status'],
+      'avatar'   => $data['avatar'] ?? null,
+      'id'       => $id,
+    ]);
   }
 
   public function updateProfile($id, $data)

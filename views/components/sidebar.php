@@ -37,41 +37,6 @@ $inactiveClass = 'text-gray-700 hover:bg-gray-100 font-medium';
       <span class="whitespace-nowrap">Thống kê</span>
     </a>
 
-    <!-- Quản lý danh mục -->
-    <a href="<?= BASE_URL ?>?act=admin-categories"
-      class="flex items-center px-4 py-3 text-sm rounded-lg transition-colors <?= isActive(['admin-categories', 'admin-categories-create', 'admin-categories-edit'], $currentAct) ? $activeClass : $inactiveClass ?>">
-      <i data-lucide="folder" class="w-5 h-5 mr-3"></i>
-      <span class="whitespace-nowrap">Quản lí danh mục</span>
-    </a>
-
-    <!-- Quản lý sách -->
-    <a href="<?= BASE_URL ?>?act=admin-books"
-      class="flex items-center px-4 py-3 text-sm rounded-lg transition-colors <?= isActive(['admin-books', 'admin-books-create', 'admin-books-edit', 'admin-books-detail', 'admin-books-toggle-status'], $currentAct) ? $activeClass : $inactiveClass ?>">
-      <i data-lucide="book-open" class="w-5 h-5 mr-3"></i>
-      <span class="whitespace-nowrap">Quản lí sách</span>
-    </a>
-
-    <!-- Quản lý flash sale -->
-    <a href="<?= BASE_URL ?>?act=admin-flash-sales"
-      class="flex items-center px-4 py-3 text-sm rounded-lg transition-colors <?= isActive(['admin-flash-sales', 'admin-flash-sales-create', 'admin-flash-sales-edit'], $currentAct) ? $activeClass : $inactiveClass ?>">
-      <i data-lucide="zap" class="w-5 h-5 mr-3"></i>
-      <span class="whitespace-nowrap">Flash Sale</span>
-    </a>
-
-    <!-- Quản lý kho hàng -->
-    <a href="<?= BASE_URL ?>?act=admin-inventories"
-      class="flex items-center px-4 py-3 text-sm rounded-lg transition-colors <?= isActive(['admin-inventories', 'admin-inventories-create', 'admin-inventories-edit'], $currentAct) ? $activeClass : $inactiveClass ?>">
-      <i data-lucide="package" class="w-5 h-5 mr-3"></i>
-      <span class="whitespace-nowrap">Quản lí kho</span>
-    </a>
-
-    <!-- Quản lý đơn hàng -->
-    <a href="<?= BASE_URL ?>?act=admin-orders"
-      class="flex items-center px-4 py-3 text-sm rounded-lg transition-colors <?= isActive(['admin-orders', 'admin-order-detail'], $currentAct) ? $activeClass : $inactiveClass ?>">
-      <i data-lucide="shopping-bag" class="w-5 h-5 mr-3"></i>
-      <span class="whitespace-nowrap">Quản lí đơn hàng</span>
-    </a>
-
     <!-- Quản lý tài khoản -->
     <a href="<?= BASE_URL ?>?act=admin-users"
       class="flex items-center px-4 py-3 text-sm rounded-lg transition-colors <?= isActive(['admin-users', 'admin-users-create', 'admin-users-edit'], $currentAct) ? $activeClass : $inactiveClass ?>">
