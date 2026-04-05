@@ -22,6 +22,7 @@ $userId   = $currentUser['id'] ?? null;
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="<?= BASE_URL ?>assets/common.js"></script>
 </head>
 
