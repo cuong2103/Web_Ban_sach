@@ -62,6 +62,7 @@ match ($act) {
   'admin-categories-delete' => (new AdminCategoryController())->delete(),
   // ─── Admin ────────────────────────────────────────────────────────
   'admin-dashboard' => (new DashboardController())->Dashboard(),
+  'admin-dashboard-data' => (new DashboardController())->dashboardData(),
     // ─── Admin: User Management ───────────────────────────────────────────────
     'admin-users' => (new AdminUserController())->list(),
     'admin-users-create' => (new AdminUserController())->create(),
