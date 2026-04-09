@@ -25,7 +25,7 @@ match ($act) {
   'profile' => (new AuthController())->profile(),
   'profile-update' => (new AuthController())->updateProfile(),
   'profile-password' => (new AuthController())->updatePassword(),
-  
+
   // Cart
   'cart' => (new CartController())->index(),
   'cart-add' => (new CartController())->add(),
@@ -63,16 +63,17 @@ match ($act) {
   // ─── Admin ────────────────────────────────────────────────────────
   'admin-dashboard' => (new DashboardController())->Dashboard(),
   'admin-dashboard-data' => (new DashboardController())->dashboardData(),
-    // ─── Admin: User Management ───────────────────────────────────────────────
-    'admin-users' => (new AdminUserController())->list(),
-    'admin-users-create' => (new AdminUserController())->create(),
-    'admin-users-store' => (new AdminUserController())->store(),
-    'admin-users-edit' => (new AdminUserController())->edit(),
-    'admin-users-update' => (new AdminUserController())->update(),
-    'admin-users-toggle-status' => (new AdminUserController())->toggleStatus(),
+  // ─── Admin: User Management ───────────────────────────────────────────────
+  'admin-users' => (new AdminUserController())->list(),
+  'admin-users-create' => (new AdminUserController())->create(),
+  'admin-users-store' => (new AdminUserController())->store(),
+  'admin-users-edit' => (new AdminUserController())->edit(),
+  'admin-users-update' => (new AdminUserController())->update(),
+  'admin-users-toggle-status' => (new AdminUserController())->toggleStatus(),
+  // ─── Admin: Inventory Management (View Only) ───────────────────────────────────
+  'admin-inventories' => (new InventoryController())->list(),
 
-
-      // ─── Error pages ──────────────────────────────────────────────────
+  // ─── Error pages ──────────────────────────────────────────────────
   '403' => require_once './views/forbidden.php',
   default => require_once './views/notFound.php',
 };

@@ -246,6 +246,8 @@ class BookModel
   public function create($data)
   {
     try {
+      $this->conn->beginTransaction();
+
       $stmt = $this->conn->prepare("
         INSERT INTO books (
           category_id, title, author, publisher, price, sale_price, 
@@ -276,12 +278,19 @@ class BookModel
         ':is_bestseller' => (int) ($data['is_bestseller'] ?? 0),
       ]);
 
+      $bookId = (int) $this->conn->lastInsertId();
+      $this->syncInventoryFromBook($bookId, (int) ($data['stock'] ?? 0));
+      $this->conn->commit();
+
       return [
         'ok' => true,
-        'id' => $this->conn->lastInsertId(),
+        'id' => $bookId,
         'message' => 'Thêm sách thành công'
       ];
     } catch (Exception $e) {
+      if ($this->conn->inTransaction()) {
+        $this->conn->rollBack();
+      }
       return ['ok' => false, 'message' => $e->getMessage()];
     }
   }
@@ -380,6 +389,8 @@ class BookModel
   public function update($id, $data)
   {
     try {
+      $this->conn->beginTransaction();
+
       $sql = "
         UPDATE books SET 
           category_id = :category_id,
@@ -427,8 +438,14 @@ class BookModel
       $stmt = $this->conn->prepare($sql);
       $stmt->execute($params);
 
+      $this->syncInventoryFromBook((int) $id, (int) ($data['stock'] ?? 0));
+      $this->conn->commit();
+
       return ['ok' => true, 'message' => 'Cập nhật sách thành công'];
     } catch (Exception $e) {
+      if ($this->conn->inTransaction()) {
+        $this->conn->rollBack();
+      }
       return ['ok' => false, 'message' => $e->getMessage()];
     }
   }
@@ -461,5 +478,23 @@ class BookModel
     } catch (Exception $e) {
       return ['ok' => false, 'message' => $e->getMessage()];
     }
+  }
+
+  private function syncInventoryFromBook($bookId, $stockQuantity)
+  {
+    $stmt = $this->conn->prepare("
+      INSERT INTO inventories (book_id, stock_quantity, imported_quantity)
+      VALUES (:book_id, :stock_quantity, :imported_quantity)
+      ON DUPLICATE KEY UPDATE
+        stock_quantity = VALUES(stock_quantity),
+        updated_at = CURRENT_TIMESTAMP
+    ");
+
+    $stockValue = max(0, (int) $stockQuantity);
+    $stmt->execute([
+      ':book_id' => (int) $bookId,
+      ':stock_quantity' => $stockValue,
+      ':imported_quantity' => $stockValue,
+    ]);
   }
 }

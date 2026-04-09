@@ -452,6 +452,11 @@ INSERT INTO books (
    'Goc nhin moi ve lich su the gioi qua con duong to lua.',
    'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600', '410', '16x24 cm', 'Bìa cứng', 18, 1, 0, 1);
 
+-- Dong bo ton kho ban dau tu bang books
+INSERT INTO inventories (book_id, stock_quantity, imported_quantity)
+SELECT book_id, stock, stock
+FROM books;
+
 -- Hinh anh chi tiet cho trang book detail
 INSERT INTO book_images (book_id, image_url) VALUES
   (1, 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=600'),
