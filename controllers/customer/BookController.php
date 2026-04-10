@@ -17,7 +17,7 @@ class BookController
         $minPrice = (int) ($_GET['min_price'] ?? $priceRange['min']);
         $maxPrice = (int) ($_GET['max_price'] ?? $priceRange['max']);
         $page = (int) ($_GET['page'] ?? 1);
-        $limit = 12;
+        $limit = 15;
         $offset = ($page - 1) * $limit;
 
         $books = $this->bookModel->getAll($search, $category, $minPrice, $maxPrice, $limit, $offset);

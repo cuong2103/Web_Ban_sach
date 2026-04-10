@@ -88,57 +88,12 @@ if ($isLoggedIn) {
                 Trang chủ
             </a>
 
-            <!-- Sản phẩm dropdown -->
-            <div class="has-dropdown flex items-center">
-                <a href="<?= BASE_URL ?>?act=books"
-                   class="nav-link <?= $currentAct === 'books' ? 'active' : '' ?> px-4 text-sm font-medium text-gray-700 hover:text-[#4CAF50] transition-colors flex items-center gap-0.5 whitespace-nowrap">
-                    Sản phẩm <i data-lucide="chevron-down" class="w-3.5 h-3.5 mt-0.5 text-gray-400"></i>
-                </a>
-                <div class="mega-drop">
-                    <div class="bg-white shadow-2xl rounded-2xl border border-gray-100 p-6 w-[700px]">
-                        <div class="grid grid-cols-3 gap-5">
-                            <?php
-                            $bookModel = new BookModel();
-                            $navbarCategories = [
-                                ['icon' => '📖', 'name' => 'Văn học',      'slug' => 'van-hoc'],
-                                ['icon' => '💼', 'name' => 'Kinh tế',      'slug' => 'kinh-te'],
-                                ['icon' => '🧒', 'name' => 'Thiếu nhi',    'slug' => 'thieu-nhi'],
-                                ['icon' => '🌟', 'name' => 'Kỹ năng sống', 'slug' => 'ky-nang-song'],
-                                ['icon' => '🔬', 'name' => 'Khoa học',     'slug' => 'khoa-hoc'],
-                                ['icon' => '📜', 'name' => 'Lịch sử',      'slug' => 'lich-su'],
-                            ];
-                            foreach ($navbarCategories as $cat):
-                                $navbarBooks = $bookModel->getBooksByCategory($cat['slug'], 4);
-                            ?>
-                            <div>
-                                <a href="<?= BASE_URL ?>?act=books&category=<?= urlencode($cat['slug']) ?>"
-                                   class="flex items-center gap-1.5 text-sm font-semibold text-[#333] hover:text-[#4CAF50] mb-2.5 transition-colors">
-                                    <span><?= $cat['icon'] ?></span><?= $cat['name'] ?>
-                                </a>
-                                <div class="space-y-1">
-                                    <?php foreach ($navbarBooks as $b): ?>
-                                    <a href="<?= BASE_URL ?>?act=book-detail&id=<?= $b['id'] ?>"
-                                       class="block text-xs text-gray-400 hover:text-[#4CAF50] line-clamp-1 py-0.5 transition-colors">
-                                        <?= htmlspecialchars($b['title']) ?>
-                                    </a>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-gray-100">
-                            <a href="<?= BASE_URL ?>?act=books" class="text-sm text-[#4CAF50] font-semibold hover:underline inline-flex items-center gap-1">
-                                Xem tất cả <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <a href="<?= BASE_URL ?>?act=books&tag=sale"
-               class="nav-link px-4 text-sm font-medium text-red-500 hover:text-red-600 transition-colors whitespace-nowrap">
-                🔥 Khuyến mãi
+            <a href="<?= BASE_URL ?>?act=books"
+               class="nav-link <?= $currentAct === 'books' ? 'active' : '' ?> px-4 text-sm font-medium text-gray-700 hover:text-[#4CAF50] transition-colors whitespace-nowrap">
+                Sản phẩm
             </a>
+
+
 
             <a href="<?= BASE_URL ?>?act=about"
                class="nav-link <?= $currentAct === 'about' ? 'active' : '' ?> px-4 text-sm font-medium text-gray-700 hover:text-[#4CAF50] transition-colors whitespace-nowrap">

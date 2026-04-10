@@ -220,8 +220,6 @@ class CartController
     $phone = trim($_POST['phone'] ?? '');
     $addressLine = trim($_POST['address_line'] ?? '');
     $ward = trim($_POST['ward'] ?? '');
-    $district = trim($_POST['district'] ?? '');
-    $city = trim($_POST['city'] ?? '');
     $note = trim($_POST['note'] ?? '');
 
     $_SESSION['checkout_old'] = [
@@ -229,9 +227,6 @@ class CartController
       'email' => $email,
       'phone' => $phone,
       'address_line' => $addressLine,
-      'ward' => $ward,
-      'district' => $district,
-      'city' => $city,
       'note' => $note,
     ];
 
@@ -240,17 +235,11 @@ class CartController
       'email' => $email,
       'phone' => $phone,
       'address_line' => $addressLine,
-      'ward' => $ward,
-      'district' => $district,
-      'city' => $city,
     ], [
       'full_name' => 'required|min:3',
       'email' => 'required|email',
       'phone' => 'required|phone',
       'address_line' => 'required|min:5',
-      'ward' => 'required',
-      'district' => 'required',
-      'city' => 'required',
     ]);
 
     if (!empty($errors)) {
@@ -258,8 +247,16 @@ class CartController
       redirect('checkout');
     }
 
-    $shippingAddress = $addressLine . ', ' . $ward . ', ' . $district . ', ' . $city;
+    $shippingAddress = $addressLine;
     $voucherCode = $_SESSION['cart_voucher']['code'] ?? '';
+
+    require_once './models/UserModel.php';
+    $userModel = new UserModel();
+    $userModel->updateProfile($userId, [
+      'fullname' => $fullName,
+      'phone' => $phone,
+      'address' => $shippingAddress
+    ]);
 
     $result = $this->cartModel->placeOrder($userId, [
       'shipping_address' => $shippingAddress,

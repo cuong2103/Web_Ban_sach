@@ -218,15 +218,15 @@ require_once './views/components/navbar.php';
                         <p class="text-xs text-gray-400 mb-3 truncate">
                             <?= htmlspecialchars($book['author']) ?>
                         </p>
-                        <div class="flex items-center justify-between">
+                        <div class="mb-3">
                             <span class="text-base font-extrabold text-[#4CAF50]">
                                 <?= number_format($displayPrice, 0, ',', '.') ?>₫
                             </span>
-                            <button onclick="window.location.href='<?= BASE_URL ?>?act=cart-add&id=<?= $book['id'] ?>'"
-                                class="p-2 border border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50] hover:text-white rounded-lg transition-colors relative z-20">
-                                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
-                            </button>
                         </div>
+                        <button onclick="window.location.href='<?= BASE_URL ?>?act=cart-add&id=<?= $book['id'] ?>'"
+                            class="w-full py-2 bg-gradient-to-r from-[#4CAF50] to-[#43A047] hover:from-[#43A047] hover:to-[#388E3C] text-white text-xs font-semibold rounded-xl transition-all relative z-20 shadow-[0_4px_10px_rgba(76,175,80,0.3)]">
+                            Thêm giỏ hàng
+                        </button>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -279,15 +279,15 @@ require_once './views/components/navbar.php';
                             Đã bán:
                             <?= number_format($sold) ?>
                         </p>
-                        <div class="flex items-center justify-between">
+                        <div class="mb-3">
                             <span class="text-base font-extrabold text-[#4CAF50]">
                                 <?= number_format($displayPrice, 0, ',', '.') ?>₫
                             </span>
-                            <button onclick="window.location.href='<?= BASE_URL ?>?act=cart-add&id=<?= $book['id'] ?>'"
-                                class="py-1.5 px-3 bg-[#FFC107] hover:bg-[#FFB300] text-[#333] text-xs font-semibold rounded-lg transition-colors relative z-20">
-                                Mua ngay
-                            </button>
                         </div>
+                        <button onclick="window.location.href='<?= BASE_URL ?>?act=cart-add&id=<?= $book['id'] ?>'"
+                            class="w-full py-2 bg-gradient-to-r from-[#4CAF50] to-[#43A047] hover:from-[#43A047] hover:to-[#388E3C] text-white text-xs font-semibold rounded-xl transition-all relative z-20 shadow-[0_4px_10px_rgba(76,175,80,0.3)]">
+                            Thêm giỏ hàng
+                        </button>
                     </div>
                 </div>
             <?php endforeach; ?>
