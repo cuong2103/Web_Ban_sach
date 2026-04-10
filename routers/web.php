@@ -2,6 +2,11 @@
 session_start();
 $act = $_GET['act'] ?? '/';
 
+// Whitelist các route không cần login
+if (!in_array($act, ['/', 'login', 'check-login', 'admin-login', 'check-admin-login', 'logout', 'home', 'register', 'check-register', 'books', 'book-detail', 'about', 'contact'])) {
+  checkLogin();
+}
+
 match ($act) {
   // ─── Home mặc định → trang chủ khách hàng ─────────────────────────
   '/' => (new HomeController())->home(),
@@ -20,6 +25,8 @@ match ($act) {
   'home' => (new HomeController())->home(),
   'books' => (new BookController())->list(),
   'book-detail' => (new BookController())->detail(),
+  'about' => (new HomeController())->about(),
+  'contact' => (new HomeController())->contact(),
 
   // profile customer
   'profile' => (new AuthController())->profile(),
@@ -60,6 +67,7 @@ match ($act) {
   'admin-categories-edit' => (new AdminCategoryController())->edit(),
   'admin-categories-update' => (new AdminCategoryController())->update(),
   'admin-categories-delete' => (new AdminCategoryController())->delete(),
+  'admin-categories-detail' => (new AdminCategoryController())->detail(),
   // ─── Admin ────────────────────────────────────────────────────────
   'admin-dashboard' => (new DashboardController())->Dashboard(),
   'admin-dashboard-data' => (new DashboardController())->dashboardData(),

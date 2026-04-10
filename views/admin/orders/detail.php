@@ -7,13 +7,16 @@ include_once './views/components/sidebar.php';
     <div class="max-w-4xl mx-auto">
               
               <!-- Header -->
-              <div class="flex items-center gap-4 mb-6">
-                  <a href="<?= BASE_URL ?>?act=admin-orders" class="p-2 bg-white text-gray-500 rounded-xl hover:bg-gray-50 border border-gray-200 transition-colors">
-                      <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                  </a>
+              <div class="mb-6 flex items-center gap-2 text-sm text-gray-500">
+                  <a href="<?= BASE_URL ?>?act=admin-orders" class="hover:text-[#4CAF50] transition-colors">Quản lý đơn hàng</a>
+                  <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                  <span class="font-medium text-gray-800">Chi tiết: #<?= htmlspecialchars($order['order_code']) ?></span>
+              </div>
+
+              <div class="mb-8 flex items-center gap-4">
                   <div>
-                      <h1 class="text-2xl font-bold text-gray-900">Chi tiết đơn hàng #<?= htmlspecialchars($order['order_code']) ?></h1>
-                      <p class="text-sm text-gray-500 mt-1">Đặt lúc: <?= date('d/m/Y H:i', strtotime($order['created_at'])) ?></p>
+                      <h2 class="text-2xl font-bold text-gray-900">Chi tiết đơn hàng #<?= htmlspecialchars($order['order_code']) ?></h2>
+                      <p class="text-gray-500 text-sm mt-1">Đặt lúc: <?= date('d/m/Y H:i', strtotime($order['created_at'])) ?></p>
                   </div>
               </div>
 
