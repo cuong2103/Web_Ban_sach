@@ -83,19 +83,19 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
-                                    <a href="<?= BASE_URL ?>?act=admin-users-edit&id=<?= $user['id'] ?>" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors tooltip" title="Chỉnh sửa">
-                                        <i data-lucide="edit" class="w-4 h-4"></i>
+                                    <a href="<?= BASE_URL ?>?act=admin-users-edit&id=<?= $user['id'] ?>" class="px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap" title="Chỉnh sửa">
+                                        <i data-lucide="edit" class="w-3.5 h-3.5"></i> Sửa
                                     </a>
                                     
                                     <form action="<?= BASE_URL ?>?act=admin-users-toggle-status" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn thay đổi trạng thái user này?');">
                                         <input type="hidden" name="id" value="<?= $user['id'] ?>">
                                         <?php if ($user['status'] == 1): ?>
-                                        <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors tooltip" title="Khóa tài khoản">
-                                            <i data-lucide="lock" class="w-4 h-4"></i>
+                                        <button type="submit" class="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap" title="Khóa tài khoản">
+                                            <i data-lucide="lock" class="w-3.5 h-3.5"></i> Khóa
                                         </button>
                                         <?php else: ?>
-                                        <button type="submit" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors tooltip" title="Mở khóa tài khoản">
-                                            <i data-lucide="unlock" class="w-4 h-4"></i>
+                                        <button type="submit" class="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap" title="Mở khóa tài khoản">
+                                            <i data-lucide="unlock" class="w-3.5 h-3.5"></i> Mở
                                         </button>
                                         <?php endif; ?>
                                     </form>

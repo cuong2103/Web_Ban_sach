@@ -107,15 +107,15 @@ include_once './views/components/sidebar.php';
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         <a href="<?= BASE_URL ?>?act=admin-flash-sales-edit&id=<?= $flashSale['id'] ?>" 
-                                           class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                                           class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap"
                                            title="Sửa">
-                                            <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                            <i data-lucide="edit-2" class="w-3.5 h-3.5"></i> Sửa
                                         </a>
                                         <a href="<?= BASE_URL ?>?act=admin-flash-sales-delete&id=<?= $flashSale['id'] ?>" 
                                            onclick="return confirm('Bạn chắc chắn muốn xóa? Tất cả sách trong flash sale này cũng sẽ bị xóa.');"
-                                           class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                           class="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap"
                                            title="Xóa">
-                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Xóa
                                         </a>
                                     </div>
                                 </td>

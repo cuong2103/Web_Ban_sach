@@ -173,6 +173,25 @@ class AdminCategoryController
         }
     }
 
+    public function detail()
+    {
+        requireAdmin();
+
+        $id = (int) ($_GET['id'] ?? 0);
+        if ($id <= 0) {
+            Message::set('error', 'Danh mục không tồn tại');
+            redirect('admin-categories');
+        }
+
+        $category = $this->categoryModel->findById($id);
+        if (!$category) {
+            Message::set('error', 'Danh mục không tồn tại');
+            redirect('admin-categories');
+        }
+
+        require_once './views/admin/categories/detail.php';
+    }
+
     public function delete()
     {
         requireAdmin();

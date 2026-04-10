@@ -26,13 +26,16 @@ include_once './views/components/sidebar.php';
     <div class="w-full">
               
         <!-- Header -->
-        <div class="flex items-center gap-4 mb-6">
-            <a href="<?= BASE_URL ?>?act=admin-flash-sales" class="p-2 bg-white text-gray-500 rounded-xl hover:bg-gray-50 border border-gray-200 transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </a>
+        <div class="mb-6 flex items-center gap-2 text-sm text-gray-500">
+            <a href="<?= BASE_URL ?>?act=admin-flash-sales" class="hover:text-[#FF6B35] transition-colors">Quản lý Flash Sale</a>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            <span class="font-medium text-gray-800">Cập nhật: <?= htmlspecialchars($flashSale['name']) ?></span>
+        </div>
+
+        <div class="mb-8 flex items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Chi tiết Flash Sale #<?= $flashSale['id'] ?></h1>
-                <p class="text-sm text-gray-500 mt-1">Quản lý và cập nhật thông tin chương trình khuyến mãi chớp nhoáng</p>
+                <h2 class="text-2xl font-bold text-gray-900">Chi tiết Flash Sale #<?= $flashSale['id'] ?></h2>
+                <p class="text-gray-500 text-sm mt-1">Quản lý và cập nhật thông tin chương trình khuyến mãi chớp nhoáng</p>
             </div>
         </div>
 

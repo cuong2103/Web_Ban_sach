@@ -6,13 +6,16 @@ include_once './views/components/sidebar.php';
 
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
     <div class="w-full">
-        <div class="flex items-center gap-4 mb-6">
-            <a href="<?= BASE_URL ?>?act=admin-categories" class="p-2 hover:bg-gray-200 rounded-lg transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
-            </a>
+        <div class="mb-6 flex items-center gap-2 text-sm text-gray-500">
+            <a href="<?= BASE_URL ?>?act=admin-categories" class="hover:text-[#4CAF50] transition-colors">Quản lý danh mục</a>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            <span class="font-medium text-gray-800">Thêm danh mục mới</span>
+        </div>
+
+        <div class="mb-8 flex items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Thêm danh mục mới</h1>
-                <p class="text-sm text-gray-500 mt-1">Điền thông tin để thêm danh mục sách</p>
+                <h2 class="text-2xl font-bold text-gray-900">Thêm danh mục mới</h2>
+                <p class="text-gray-500 text-sm mt-1">Điền thông tin để thêm danh mục sách</p>
             </div>
         </div>
 
