@@ -179,9 +179,14 @@ class AdminOrderModel
             if ((int) $statusId === 5) {
                 $items = $this->getOrderItems($orderId);
                 $restockStmt = $this->conn->prepare("UPDATE books SET stock = stock + :quantity WHERE book_id = :book_id");
+                $restockInvStmt = $this->conn->prepare("UPDATE inventories SET stock_quantity = stock_quantity + :quantity WHERE book_id = :book_id");
 
                 foreach ($items as $item) {
                     $restockStmt->execute([
+                        'quantity' => (int) $item['quantity'],
+                        'book_id' => (int) $item['book_id']
+                    ]);
+                    $restockInvStmt->execute([
                         'quantity' => (int) $item['quantity'],
                         'book_id' => (int) $item['book_id']
                     ]);

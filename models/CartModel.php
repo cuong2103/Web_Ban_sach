@@ -375,6 +375,8 @@ class CartModel
 
       $stockStmt = $this->conn->prepare("\n        UPDATE books\n        SET stock = stock - :quantity\n        WHERE book_id = :book_id AND stock >= :quantity AND status = 1\n      ");
 
+      $inventoryStmt = $this->conn->prepare("\n        UPDATE inventories\n        SET stock_quantity = stock_quantity - :quantity\n        WHERE book_id = :book_id AND stock_quantity >= :quantity\n      ");
+
       foreach ($validItems as $item) {
         $quantity = (int)$item['quantity'];
         $unitPrice = (float)$item['unit_price'];
@@ -396,6 +398,11 @@ class CartModel
         if ($stockStmt->rowCount() === 0) {
           throw new Exception('Không thể cập nhật tồn kho, vui lòng thử lại.');
         }
+
+        $inventoryStmt->execute([
+          'quantity' => $quantity,
+          'book_id' => (int)$item['book_id'],
+        ]);
       }
 
       if (!empty($voucher['voucher_id'])) {
@@ -471,8 +478,13 @@ class CartModel
       $items = $itemsStmt->fetchAll();
 
       $restockStmt = $this->conn->prepare("UPDATE books SET stock = stock + :quantity WHERE book_id = :book_id");
+      $restockInvStmt = $this->conn->prepare("UPDATE inventories SET stock_quantity = stock_quantity + :quantity WHERE book_id = :book_id");
       foreach ($items as $item) {
         $restockStmt->execute([
+          'quantity' => (int)$item['quantity'],
+          'book_id' => (int)$item['book_id'],
+        ]);
+        $restockInvStmt->execute([
           'quantity' => (int)$item['quantity'],
           'book_id' => (int)$item['book_id'],
         ]);
