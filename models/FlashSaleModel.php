@@ -101,7 +101,8 @@ class FlashSaleModel
         fsi.stock_limit,
         b.title,
         b.author,
-        b.price
+        b.price,
+        b.thumbnail
       FROM flash_sale_items fsi
       JOIN books b ON fsi.book_id = b.book_id
       WHERE fsi.flash_sale_id = :flash_sale_id
@@ -109,6 +110,23 @@ class FlashSaleModel
     ");
         $stmt->execute(['flash_sale_id' => $flashSaleId]);
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Lấy flash sale đang hoạt động hiện tại
+     */
+    public function getActiveFlashSale()
+    {
+        $stmt = $this->conn->prepare("
+            SELECT * FROM flash_sales 
+            WHERE status = 1 
+            AND start_time <= NOW() 
+            AND end_time >= NOW()
+            ORDER BY end_time ASC 
+            LIMIT 1
+        ");
+        $stmt->execute();
+        return $stmt->fetch();
     }
 
     /**

@@ -62,7 +62,7 @@ include_once './views/components/sidebar.php';
                         Thông tin chương trình
                     </h2>
                 </div>
-                <form method="POST" action="<?php echo BASE_URL; ?>admin-flash-sales-update" class="p-6 space-y-6">
+                <form method="POST" action="<?php echo BASE_URL; ?>?act=admin-flash-sales-update" class="p-6 space-y-6">
                     <input type="hidden" name="id" value="<?php echo $flashSale['id']; ?>">
 
                     <!-- Tên flash sale -->
@@ -130,7 +130,7 @@ include_once './views/components/sidebar.php';
                             Thêm sách tham gia
                         </h2>
                     </div>
-                    <form method="POST" action="<?php echo BASE_URL; ?>admin-flash-sales-add-item" class="p-6 space-y-5 bg-gray-50/50">
+                    <form method="POST" action="<?php echo BASE_URL; ?>?act=admin-flash-sales-add-item" class="p-6 space-y-5 bg-gray-50/50">
                         <input type="hidden" name="flash_sale_id" value="<?php echo $flashSale['id']; ?>">
 
                         <div>
@@ -138,23 +138,25 @@ include_once './views/components/sidebar.php';
                             <select id="book_id" name="book_id" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/20 focus:border-[#FF6B35] bg-white transition-colors" required>
                                 <option value="">-- Chọn sách --</option>
                                 <?php foreach ($books as $book): ?>
-                                    <option value="<?php echo $book['id']; ?>">
-                                        <?php echo htmlspecialchars($book['title']); ?> - <?php echo htmlspecialchars($book['author']); ?>
+                                    <option value="<?php echo $book['id']; ?>" data-price="<?php echo $book['price']; ?>">
+                                        <?php echo htmlspecialchars($book['title']); ?> — <?php echo number_format($book['price'], 0, ',', '.'); ?>₫
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <p id="original_price_display" class="mt-1 text-xs text-gray-500 hidden">Giá gốc: <span id="original_price_text" class="font-medium text-gray-700"></span></p>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
-                                <label for="discount_percent" class="block text-sm font-medium text-gray-700 mb-2">Giảm giá (%) <span class="text-red-500">*</span></label>
-                                <input type="number" id="discount_percent" name="discount_percent" placeholder="Nhập %" value="0" min="0" max="100" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/20 focus:border-[#FF6B35] transition-colors" required>
-                                <p class="mt-1 text-xs text-gray-500">Giảm theo phần trăm</p>
+                                <label for="discount_percent" class="block text-sm font-medium text-gray-700 mb-2">Giảm giá (%)</label>
+                                <input type="number" id="discount_percent" name="discount_percent" placeholder="Nhập %" value="0" min="0" max="100" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/20 focus:border-[#FF6B35] transition-colors">
+                                <p class="mt-1 text-xs text-gray-500">Nhập % → tự tính giá sale</p>
                             </div>
 
                             <div>
                                 <label for="sale_price" class="block text-sm font-medium text-gray-700 mb-2">Giá sale (₫) <span class="text-red-500">*</span></label>
-                                <input type="number" id="sale_price" name="sale_price" placeholder="Nhập giá" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/20 focus:border-[#FF6B35] transition-colors" required>
+                                <input type="number" id="sale_price" name="sale_price" placeholder="Chọn sách & nhập % giảm" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/20 focus:border-[#FF6B35] transition-colors" required>
+                                <p class="mt-1 text-xs text-gray-500">Nhập giá → tự tính % giảm</p>
                             </div>
                         </div>
 
@@ -204,7 +206,7 @@ include_once './views/components/sidebar.php';
                                         </div>
                                     </div>
                                     <div class="shrink-0 w-full sm:w-auto mt-2 sm:mt-0 pt-3 sm:pt-0 border-t border-gray-100 sm:border-0">
-                                        <a href="<?php echo BASE_URL; ?>admin-flash-sales-remove-item?item_id=<?php echo $item['id']; ?>&flash_sale_id=<?php echo $flashSale['id']; ?>"
+                                        <a href="<?php echo BASE_URL; ?>?act=admin-flash-sales-remove-item&item_id=<?php echo $item['id']; ?>&flash_sale_id=<?php echo $flashSale['id']; ?>"
                                            class="w-full sm:w-auto px-3 py-1.5 bg-red-50 text-red-600 border border-red-100 hover:bg-red-500 hover:text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1.5"
                                            onclick="return confirm('Bạn chắc chắn muốn xóa sách này khỏi flash sale?');">
                                            <i data-lucide="trash-2" class="w-4 h-4"></i> Xóa
@@ -222,27 +224,63 @@ include_once './views/components/sidebar.php';
 </main>
 
 <script>
-    // Logic for auto-calculating sale price or discount percent
     document.addEventListener('DOMContentLoaded', function() {
-        const bookSelect = document.getElementById('book_id');
-        const discountInput = document.getElementById('discount_percent');
-        const priceInput = document.getElementById('sale_price');
-        
+        const bookSelect      = document.getElementById('book_id');
+        const discountInput   = document.getElementById('discount_percent');
+        const salePriceInput  = document.getElementById('sale_price');
+        const priceDisplay    = document.getElementById('original_price_display');
+        const priceText       = document.getElementById('original_price_text');
+
         let originalPrice = 0;
+        let updatingFromDiscount = false;
+        let updatingFromSalePrice = false;
 
+        // Khi chọn sách → hiện giá gốc, reset các trường
         bookSelect.addEventListener('change', function() {
-            // Need book original prices array in real scenario
-            // For now, assume it's retrieved or leave as manual
+            const opt = this.options[this.selectedIndex];
+            originalPrice = parseFloat(opt.getAttribute('data-price') || 0);
+
+            if (originalPrice > 0) {
+                priceText.textContent = originalPrice.toLocaleString('vi-VN') + '₫';
+                priceDisplay.classList.remove('hidden');
+
+                // Nếu đã có % thì tính luôn giá sale
+                const pct = parseFloat(discountInput.value) || 0;
+                if (pct > 0) {
+                    salePriceInput.value = Math.round(originalPrice * (100 - pct) / 100);
+                }
+            } else {
+                priceDisplay.classList.add('hidden');
+                originalPrice = 0;
+            }
         });
 
-        // Basic calculation placeholders
+        // Nhập % → tự tính giá sale
         discountInput.addEventListener('input', function() {
-            // If we had originalPrice, calculate salePrice
-            // salePrice = originalPrice * (100 - this.value) / 100
+            if (updatingFromSalePrice) return;
+            if (originalPrice <= 0) return;
+
+            updatingFromDiscount = true;
+            const pct = parseFloat(this.value) || 0;
+            if (pct >= 0 && pct <= 100) {
+                salePriceInput.value = Math.round(originalPrice * (100 - pct) / 100);
+            }
+            updatingFromDiscount = false;
         });
-        
-        priceInput.addEventListener('input', function() {
-            // If we had originalPrice, calculate discount Input
+
+        // Nhập giá sale → tự tính %
+        salePriceInput.addEventListener('input', function() {
+            if (updatingFromDiscount) return;
+            if (originalPrice <= 0) return;
+
+            updatingFromSalePrice = true;
+            const saleVal = parseFloat(this.value) || 0;
+            if (saleVal > 0 && saleVal < originalPrice) {
+                discountInput.value = Math.round((1 - saleVal / originalPrice) * 100);
+            } else if (saleVal >= originalPrice) {
+                discountInput.value = 0;
+            }
+            updatingFromSalePrice = false;
         });
     });
 </script>
