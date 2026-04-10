@@ -332,7 +332,7 @@ $gallery = array_merge([['image_url' => $mainImage]], array_map(function ($img) 
                             <p class="text-xs text-gray-500 mb-2 truncate">
                                 <?= htmlspecialchars($rBook['author']) ?>
                             </p>
-                            <div class="flex items-baseline gap-2">
+                            <div class="flex items-baseline gap-2 mb-3">
                                 <span class="text-base font-extrabold text-[#4CAF50]">
                                     <?= number_format($rDisplayPrice, 0, ',', '.') ?>₫
                                 </span>
@@ -342,6 +342,10 @@ $gallery = array_merge([['image_url' => $mainImage]], array_map(function ($img) 
                                     </span>
                                 <?php endif; ?>
                             </div>
+                            <button onclick="window.location.href='<?= BASE_URL ?>?act=cart-add&id=<?= $rBook['id'] ?>'"
+                                class="w-full py-2 bg-gradient-to-r from-[#4CAF50] to-[#43A047] hover:from-[#43A047] hover:to-[#388E3C] text-white text-xs font-semibold rounded-xl transition-all relative z-20 shadow-[0_4px_10px_rgba(76,175,80,0.3)]">
+                                Thêm giỏ hàng
+                            </button>
                         </div>
                     <?php endforeach; ?>
                 </div>

@@ -70,26 +70,12 @@ $noteValue = htmlspecialchars($checkoutOld['note'] ?? '');
           <input type="email" name="email" value="<?= $emailValue ?>"
             class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4CAF50]">
         </div>
-        <div>
+        <div class="md:col-span-2">
           <label class="text-xs text-gray-600">Địa chỉ *</label>
           <input type="text" name="address_line" value="<?= $addressLineValue ?>"
             class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4CAF50]">
         </div>
-        <div>
-          <label class="text-xs text-gray-600">Phường/Xã *</label>
-          <input type="text" name="ward" value="<?= $wardValue ?>"
-            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4CAF50]">
-        </div>
-        <div>
-          <label class="text-xs text-gray-600">Quận/Huyện *</label>
-          <input type="text" name="district" value="<?= $districtValue ?>"
-            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4CAF50]">
-        </div>
-        <div class="md:col-span-2">
-          <label class="text-xs text-gray-600">Tỉnh/Thành phố *</label>
-          <input type="text" name="city" value="<?= $cityValue ?>"
-            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4CAF50]">
-        </div>
+
         <div class="md:col-span-2">
           <label class="text-xs text-gray-600">Ghi chú</label>
           <textarea name="note" rows="3"

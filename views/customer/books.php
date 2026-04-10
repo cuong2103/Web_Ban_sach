@@ -43,10 +43,10 @@ if ($debug):
     </div>
 <?php endif; ?>
 
-<div class="max-w-[1200px] mx-auto px-4 py-8">
-    <div class="flex gap-6">
+<div class="w-full xl:px-12 mx-auto px-4 py-8">
+    <div class="flex gap-8">
         <!-- Sidebar Filters -->
-        <aside class="w-64 flex-shrink-0">
+        <aside class="w-72 flex-shrink-0">
             <div class="bg-white rounded-lg shadow-sm p-6 sticky top-24">
                 <h3 class="text-lg font-bold text-gray-800 mb-6">Bộ lọc</h3>
 
@@ -145,7 +145,7 @@ if ($debug):
                 </div>
             <?php else: ?>
                 <!-- Books Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">
                     <?php foreach ($books as $book):
                         $displayPrice = $book['sale_price'] ?? $book['price'];
                         $originalPrice = $book['sale_price'] ? $book['price'] : null;
@@ -180,20 +180,7 @@ if ($debug):
                                     <?php endif; ?>
                                 </a>
 
-                                <!-- Action Buttons Overlay -->
-                                <div
-                                    class="absolute inset-0 bg-black/0 group-hover:bg-black/30 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center gap-3">
-                                    <?php if ($book['stock'] > 0): ?>
-                                        <button onclick="addToCart(<?= $book['id'] ?>)"
-                                            class="bg-[#4CAF50] hover:bg-[#43A047] text-white p-3 rounded-full transition-colors shadow-lg transform hover:scale-110">
-                                            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-                                        </button>
-                                        <a href="<?= BASE_URL ?>?act=book-detail&id=<?= $book['id'] ?>"
-                                            class="bg-white hover:bg-gray-100 text-[#333] p-3 rounded-full transition-colors shadow-lg transform hover:scale-110">
-                                            <i data-lucide="eye" class="w-5 h-5"></i>
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
+
                             </div>
 
                             <!-- Book Info -->
@@ -209,7 +196,7 @@ if ($debug):
                                 </p>
 
                                 <!-- Price -->
-                                <div class="flex items-baseline gap-2">
+                                <div class="flex items-baseline gap-2 mb-3">
                                     <span class="text-lg font-bold text-[#4CAF50]">
                                         <?= number_format($displayPrice, 0, ',', '.') ?>₫
                                     </span>
@@ -219,6 +206,10 @@ if ($debug):
                                         </span>
                                     <?php endif; ?>
                                 </div>
+                                <button onclick="window.location.href='<?= BASE_URL ?>?act=cart-add&id=<?= $book['id'] ?>'"
+                                    class="w-full py-2 bg-gradient-to-r from-[#4CAF50] to-[#43A047] hover:from-[#43A047] hover:to-[#388E3C] text-white text-xs font-semibold rounded-xl transition-all relative z-20 shadow-[0_4px_10px_rgba(76,175,80,0.3)]">
+                                    Thêm giỏ hàng
+                                </button>
                             </div>
                         </div>
                     <?php endforeach; ?>
