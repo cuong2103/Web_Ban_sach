@@ -21,11 +21,11 @@ include_once './views/components/sidebar.php';
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
             <div class="p-4 border-b border-gray-100 bg-gray-50/50">
-                <form action="" method="GET" class="flex flex-wrap gap-4 items-center justify-between">
+                <form action="" method="GET" class="flex flex-wrap gap-4 items-center justify-between w-full">
                     <input type="hidden" name="act" value="admin-inventories">
 
                     <div class="flex flex-1 min-w-[300px] gap-4">
-                        <div class="relative flex-1 max-w-md">
+                        <div class="relative flex-1 min-w-[200px]">
                             <i data-lucide="search"
                                 class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                             <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
