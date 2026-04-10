@@ -73,6 +73,11 @@ match ($act) {
   // ─── Admin: Inventory Management (View Only) ───────────────────────────────────
   'admin-inventories' => (new InventoryController())->list(),
 
+  // ─── Admin: Order Management ────────────────────────────────────────────────
+  'admin-orders' => (new AdminOrderController())->list(),
+  'admin-order-detail' => (new AdminOrderController())->detail(),
+  'admin-order-update-status' => (new AdminOrderController())->updateStatus(),
+
   // ─── Error pages ──────────────────────────────────────────────────
   '403' => require_once './views/forbidden.php',
   default => require_once './views/notFound.php',
