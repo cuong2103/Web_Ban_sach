@@ -96,6 +96,13 @@ match ($act) {
   'admin-order-detail' => (new AdminOrderController())->detail(),
   'admin-order-update-status' => (new AdminOrderController())->updateStatus(),
 
+  // ─── Admin: Voucher Management ────────────────────────────────────────────────
+  'admin-vouchers' => (new AdminVoucherController())->list(),
+  'admin-voucher-add' => (new AdminVoucherController())->create(),
+  'admin-voucher-edit' => (new AdminVoucherController())->edit(),
+  'admin-voucher-save' => (new AdminVoucherController())->save(),
+  'admin-voucher-delete' => (new AdminVoucherController())->delete(),
+
   // ─── Error pages ──────────────────────────────────────────────────
   '403' => require_once './views/forbidden.php',
   default => require_once './views/notFound.php',

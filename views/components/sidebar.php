@@ -59,6 +59,13 @@ $inactiveClass = 'text-gray-700 hover:bg-gray-100 font-medium';
       <span class="whitespace-nowrap">Flash Sale</span>
     </a>
 
+    <!-- Quản lý Voucher -->
+    <a href="<?= BASE_URL ?>?act=admin-vouchers"
+      class="flex items-center px-4 py-3 text-sm rounded-lg transition-colors <?= isActive(['admin-vouchers', 'admin-voucher-add', 'admin-voucher-edit'], $currentAct) ? $activeClass : $inactiveClass ?>">
+      <i data-lucide="ticket" class="w-5 h-5 mr-3"></i>
+      <span class="whitespace-nowrap">Quản lí Voucher</span>
+    </a>
+
     <!-- Quản lý kho hàng -->
     <a href="<?= BASE_URL ?>?act=admin-inventories"
       class="flex items-center px-4 py-3 text-sm rounded-lg transition-colors <?= isActive(['admin-inventories', 'admin-inventories-create', 'admin-inventories-edit'], $currentAct) ? $activeClass : $inactiveClass ?>">
