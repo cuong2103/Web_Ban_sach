@@ -15,7 +15,7 @@ $totalSpent = 0;
 
 foreach (($orders ?? []) as $orderRow) {
     $totalSpent += (float)($orderRow['total_amount'] ?? 0);
-    if (strtolower((string)($orderRow['status_name'] ?? '')) === 'pending') {
+    if (mb_strtolower((string)($orderRow['status_name'] ?? ''), 'UTF-8') === 'chờ xác nhận') {
         $pendingOrders++;
     }
 }
@@ -93,7 +93,7 @@ foreach (($orders ?? []) as $orderRow) {
                         <td class="px-4 py-3 text-red-500">-<?= formatVnd($order['discount_amount']) ?></td>
                         <td class="px-4 py-3">
                             <span class="inline-flex px-2 py-1 rounded-full text-xs bg-blue-50 text-blue-600">
-                                <?= htmlspecialchars($order['status_name'] ?? 'Pending') ?>
+                                <?= htmlspecialchars($order['status_name'] ?? 'Chờ xác nhận') ?>
                             </span>
                         </td>
                         <td class="px-4 py-3 text-right font-semibold text-[#333]">

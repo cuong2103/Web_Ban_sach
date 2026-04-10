@@ -19,7 +19,7 @@ function formatVnd($amount)
     <div class="flex flex-wrap gap-3 items-center justify-between">
       <h1 class="text-3xl font-bold text-[#333]">Chi tiết đơn hàng #<?= htmlspecialchars($order['order_code']) ?></h1>
       <span class="inline-flex px-3 py-1 rounded-full text-sm bg-blue-50 text-blue-600">
-        <?= htmlspecialchars($order['status_name'] ?? 'Pending') ?>
+        <?= htmlspecialchars($order['status_name'] ?? 'Chờ xác nhận') ?>
       </span>
     </div>
   </div>
