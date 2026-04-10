@@ -4,7 +4,7 @@ include_once './views/components/sidebar.php';
 ?>
 
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-    <div class="max-w-4xl mx-auto">
+    <div class="w-full">
               
               <!-- Header -->
               <div class="mb-6 flex items-center gap-2 text-sm text-gray-500">
@@ -22,9 +22,9 @@ include_once './views/components/sidebar.php';
 
               
 
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                   <!-- Cột trái: Thông tin khách + Sản phẩm -->
-                  <div class="lg:col-span-2 space-y-6">
+                  <div class="xl:col-span-2 space-y-6">
                       
                       <!-- Box khách hàng -->
                       <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">

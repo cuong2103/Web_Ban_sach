@@ -144,23 +144,23 @@ require_once './views/components/sidebar.php';
   <div class="grid grid-cols-2 xl:grid-cols-5 gap-4">
     <div class="bg-white rounded-xl shadow-sm p-5">
       <p class="text-xs text-gray-400 mb-2">Đơn chờ xử lý</p>
-      <p class="font-bold text-[#333] text-lg" id="statusPendingValue"><?= $stats['order_status_distribution']['Pending'] ?? 0 ?></p>
+      <p class="font-bold text-[#333] text-lg" id="statusPendingValue"><?= $stats['order_status_distribution']['Chờ xác nhận'] ?? 0 ?></p>
     </div>
     <div class="bg-white rounded-xl shadow-sm p-5">
       <p class="text-xs text-gray-400 mb-2">Đã xác nhận</p>
-      <p class="font-bold text-[#333] text-lg" id="statusConfirmedValue"><?= $stats['order_status_distribution']['Confirmed'] ?? 0 ?></p>
+      <p class="font-bold text-[#333] text-lg" id="statusConfirmedValue"><?= $stats['order_status_distribution']['Đã xác nhận'] ?? 0 ?></p>
     </div>
     <div class="bg-white rounded-xl shadow-sm p-5">
       <p class="text-xs text-gray-400 mb-2">Đang giao</p>
-      <p class="font-bold text-[#333] text-lg" id="statusShippingValue"><?= $stats['order_status_distribution']['Shipping'] ?? 0 ?></p>
+      <p class="font-bold text-[#333] text-lg" id="statusShippingValue"><?= $stats['order_status_distribution']['Đang giao hàng'] ?? 0 ?></p>
     </div>
     <div class="bg-white rounded-xl shadow-sm p-5">
       <p class="text-xs text-gray-400 mb-2">Hoàn thành</p>
-      <p class="font-bold text-[#333] text-lg" id="statusCompletedValue"><?= $stats['order_status_distribution']['Completed'] ?? 0 ?></p>
+      <p class="font-bold text-[#333] text-lg" id="statusCompletedValue"><?= $stats['order_status_distribution']['Hoàn thành'] ?? 0 ?></p>
     </div>
     <div class="bg-white rounded-xl shadow-sm p-5">
       <p class="text-xs text-gray-400 mb-2">Đã hủy</p>
-      <p class="font-bold text-[#333] text-lg" id="statusCancelledValue"><?= $stats['order_status_distribution']['Cancelled'] ?? 0 ?></p>
+      <p class="font-bold text-[#333] text-lg" id="statusCancelledValue"><?= $stats['order_status_distribution']['Đã hủy'] ?? 0 ?></p>
     </div>
   </div>
   <!-- Month comparison -->
@@ -263,11 +263,11 @@ require_once './views/components/sidebar.php';
       <div class="divide-y divide-gray-50" id="recentOrdersList">
         <?php
         $statusClass = [
-          'Pending' => 'bg-yellow-100 text-yellow-700',
-          'Confirmed' => 'bg-blue-100 text-blue-700',
-          'Shipping' => 'bg-blue-100 text-blue-700',
-          'Completed' => 'bg-green-100 text-green-700',
-          'Cancelled' => 'bg-red-100 text-red-500',
+          'Chờ xác nhận' => 'bg-yellow-100 text-yellow-700',
+          'Đã xác nhận' => 'bg-blue-100 text-blue-700',
+          'Đang giao hàng' => 'bg-blue-100 text-blue-700',
+          'Hoàn thành' => 'bg-green-100 text-green-700',
+          'Đã hủy' => 'bg-red-100 text-red-500',
         ];
         if (!empty($stats['recent_orders'])):
           foreach ($stats['recent_orders'] as $order): ?>
@@ -473,11 +473,11 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       const statusClass = {
-        Pending: 'bg-yellow-100 text-yellow-700',
-        Confirmed: 'bg-blue-100 text-blue-700',
-        Shipping: 'bg-blue-100 text-blue-700',
-        Completed: 'bg-green-100 text-green-700',
-        Cancelled: 'bg-red-100 text-red-500',
+        'Chờ xác nhận': 'bg-yellow-100 text-yellow-700',
+        'Đã xác nhận': 'bg-blue-100 text-blue-700',
+        'Đang giao hàng': 'bg-blue-100 text-blue-700',
+        'Hoàn thành': 'bg-green-100 text-green-700',
+        'Đã hủy': 'bg-red-100 text-red-500',
       };
 
       if (Array.isArray(data.recent_orders) && data.recent_orders.length > 0) {
@@ -515,11 +515,11 @@ document.addEventListener('DOMContentLoaded', function() {
       updateStatText('pendingOrdersValue', data.pending_orders);
       updateStatText('newCustomersValue', data.new_customers);
       updateStatText('lowStockBooksValue', data.low_stock_books);
-      updateStatText('statusPendingValue', data.order_status_distribution?.Pending ?? 0);
-      updateStatText('statusConfirmedValue', data.order_status_distribution?.Confirmed ?? 0);
-      updateStatText('statusShippingValue', data.order_status_distribution?.Shipping ?? 0);
-      updateStatText('statusCompletedValue', data.order_status_distribution?.Completed ?? 0);
-      updateStatText('statusCancelledValue', data.order_status_distribution?.Cancelled ?? 0);
+      updateStatText('statusPendingValue', data.order_status_distribution?.['Chờ xác nhận'] ?? 0);
+      updateStatText('statusConfirmedValue', data.order_status_distribution?.['Đã xác nhận'] ?? 0);
+      updateStatText('statusShippingValue', data.order_status_distribution?.['Đang giao hàng'] ?? 0);
+      updateStatText('statusCompletedValue', data.order_status_distribution?.['Hoàn thành'] ?? 0);
+      updateStatText('statusCancelledValue', data.order_status_distribution?.['Đã hủy'] ?? 0);
       updateStatText('todayOrdersValue', data.today_orders);
       updateStatText('revenueTodayValue', new Intl.NumberFormat('vi-VN').format(data.revenue_today) + ' ₫');
       updateStatText('averageOrderValue', new Intl.NumberFormat('vi-VN').format(data.average_order_value) + ' ₫');

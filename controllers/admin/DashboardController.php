@@ -86,18 +86,18 @@ class DashboardController
     $orderStatusRows = $statusStmt->fetchAll();
 
     $orderStatusDistribution = [
-      'Pending' => 0,
-      'Confirmed' => 0,
-      'Shipping' => 0,
-      'Completed' => 0,
-      'Cancelled' => 0,
+      'Chờ xác nhận' => 0,
+      'Đã xác nhận' => 0,
+      'Đang giao hàng' => 0,
+      'Hoàn thành' => 0,
+      'Đã hủy' => 0,
     ];
     foreach ($orderStatusRows as $row) {
-      $key = $row['status_name'] ?? 'Pending';
+      $key = $row['status_name'] ?? 'Chờ xác nhận';
       $orderStatusDistribution[$key] = (int)$row['order_count'];
     }
 
-    $pendingOrders = $orderStatusDistribution['Pending'] ?? 0;
+    $pendingOrders = $orderStatusDistribution['Chờ xác nhận'] ?? 0;
 
     // Khách hàng mới trong tháng
     $newCustomersQuery = "SELECT COUNT(*) as new_customers FROM users WHERE role_id = 2 AND YEAR(created_at) = YEAR(CURRENT_DATE()) AND MONTH(created_at) = MONTH(CURRENT_DATE())";
