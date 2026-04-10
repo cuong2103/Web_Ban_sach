@@ -231,6 +231,27 @@ class BookModel
     $stmt->execute();
     return $stmt->fetchAll();
   }
+
+  public function getBestsellerWithSoldCount($limit = 4)
+  {
+    $stmt = $this->conn->prepare("
+      SELECT 
+        b.book_id as id, b.title, b.author, b.price, b.sale_price, b.thumbnail, b.stock,
+        c.slug, c.category_id, c.name as category_name,
+        COALESCE(SUM(oi.quantity), 0) as sold_count
+      FROM books b
+      LEFT JOIN categories c ON b.category_id = c.category_id
+      LEFT JOIN order_items oi ON oi.book_id = b.book_id
+      LEFT JOIN orders o ON o.order_id = oi.order_id AND o.status_id NOT IN (5)
+      WHERE b.status = 1
+      GROUP BY b.book_id
+      ORDER BY sold_count DESC, b.is_bestseller DESC
+      LIMIT :limit
+    ");
+    $stmt->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+  }
   public function getDistinctAuthors()
   {
     $stmt = $this->conn->prepare("SELECT DISTINCT author FROM books WHERE author != '' ORDER BY author ASC");
