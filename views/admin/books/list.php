@@ -251,20 +251,20 @@ include_once './views/components/sidebar.php';
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex items-center justify-end gap-1">
                                             <a href="<?= BASE_URL ?>?act=admin-books-detail&id=<?= $book['book_id'] ?>"
-                                                class="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-colors"
+                                                class="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap"
                                                 title="Xem chi tiết">
-                                                <i data-lucide="eye" class="w-4 h-4"></i>
+                                                <i data-lucide="eye" class="w-3.5 h-3.5"></i> Chi tiết
                                             </a>
                                             <a href="<?= BASE_URL ?>?act=admin-books-edit&id=<?= $book['book_id'] ?>"
-                                                class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                                                class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap"
                                                 title="Chỉnh sửa">
-                                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                                                <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Sửa
                                             </a>
                                             <a href="<?= BASE_URL ?>?act=admin-books-delete&id=<?= $book['book_id'] ?>"
                                                 onclick="return confirm('Bạn chắc chắn muốn xóa sách:\n«<?= addslashes($book['title']) ?>»?\n\nCác ảnh liên quan sẽ bị xóa theo!');"
-                                                class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                class="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-xs font-medium flex items-center gap-1.5 whitespace-nowrap"
                                                 title="Xóa">
-                                                <i data-lucide="trash" class="w-4 h-4"></i>
+                                                <i data-lucide="trash" class="w-3.5 h-3.5"></i> Xóa
                                             </a>
                                         </div>
                                     </td>
