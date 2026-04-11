@@ -8,21 +8,32 @@ class DashboardController
     $currentUser = $_SESSION['currentUser'] ?? [];
     $fullname = $currentUser['fullname'] ?? 'Admin';
 
+    $tcMonth = $_GET['tc_month'] ?? date('m');
+    $tcYear = $_GET['tc_year'] ?? date('Y');
+    $chartMonth = $_GET['chart_month'] ?? 'all';
+    $chartYear = $_GET['chart_year'] ?? date('Y');
+
     // Lấy thống kê
-    $stats = $this->getDashboardStats();
+    $stats = $this->getDashboardStats($tcMonth, $tcYear, $chartMonth, $chartYear);
 
     require_once './views/admin/dashboard.php';
   }
 
   public function dashboardData()
   {
-    $stats = $this->getDashboardStats();
+    $tcMonth = $_GET['tc_month'] ?? date('m');
+    $tcYear = $_GET['tc_year'] ?? date('Y');
+    $chartMonth = $_GET['chart_month'] ?? 'all';
+    $chartYear = $_GET['chart_year'] ?? date('Y');
+
+    $stats = $this->getDashboardStats($tcMonth, $tcYear, $chartMonth, $chartYear);
     header('Content-Type: application/json');
     echo json_encode([
       'top_books' => $stats['top_books'] ?? [],
       'best_sellers' => $stats['best_sellers'] ?? [],
       'recent_orders' => $stats['recent_orders'] ?? [],
       'top_customers' => $stats['top_customers'] ?? [],
+      'revenue_chart_data' => $stats['revenue_chart_data'] ?? [],
       'low_stock_books_list' => $stats['low_stock_books_list'] ?? [],
       'revenue_this_month' => $stats['revenue_this_month'] ?? 0,
       'revenue_last_month' => $stats['revenue_last_month'] ?? 0,
@@ -45,7 +56,7 @@ class DashboardController
     exit;
   }
 
-  private function getDashboardStats()
+  private function getDashboardStats($tcMonth = null, $tcYear = null, $chartMonth = null, $chartYear = null)
   {
     $conn = connectDB();
 
@@ -129,14 +140,23 @@ class DashboardController
     $averageOrderStmt->execute();
     $averageOrderValue = $averageOrderStmt->fetch()['average_order_value'] ?? 0;
 
-    // Top 5 khách hàng chi tiêu nhiều nhất
+    // Top khách hàng chi tiêu
     $topCustomersQuery = "SELECT u.user_id, u.full_name AS customer, COUNT(o.order_id) as order_count, COALESCE(SUM(o.total_amount), 0) as total_spent
       FROM users u
       JOIN orders o ON o.user_id = u.user_id
-      WHERE u.role_id = 2 AND o.status_id != 5
-      GROUP BY u.user_id, u.full_name
+      WHERE u.role_id = 2 AND o.status_id != 5";
+
+    if ($tcYear && $tcYear !== 'all') {
+      $topCustomersQuery .= " AND YEAR(o.created_at) = " . (int)$tcYear;
+    }
+    if ($tcMonth && $tcMonth !== 'all') {
+      $topCustomersQuery .= " AND MONTH(o.created_at) = " . (int)$tcMonth;
+    }
+
+    $topCustomersQuery .= " GROUP BY u.user_id, u.full_name
       ORDER BY total_spent DESC
       LIMIT 5";
+
     $topCustomersStmt = $conn->prepare($topCustomersQuery);
     $topCustomersStmt->execute();
     $topCustomers = $topCustomersStmt->fetchAll();
@@ -211,36 +231,48 @@ class DashboardController
       $revenueChangePercent = (($revenueThisMonth - $revenueLastMonth) / $revenueLastMonth) * 100;
     }
 
-    // Doanh thu theo tháng (12 tháng gần nhất)
-    $monthlyRevenueQuery = "SELECT 
-        YEAR(created_at) as year, 
-        MONTH(created_at) as month, 
-        COALESCE(SUM(total_amount), 0) as revenue 
-      FROM orders 
-      WHERE status_id != 5 
-      GROUP BY YEAR(created_at), MONTH(created_at) 
-      ORDER BY YEAR(created_at), MONTH(created_at)";
-    $monthlyStmt = $conn->prepare($monthlyRevenueQuery);
-    $monthlyStmt->execute();
-    $monthlyRevenueRows = $monthlyStmt->fetchAll();
-
-    $monthlyRevenue = [];
-    for ($i = 11; $i >= 0; $i--) {
-      $date = new DateTime("first day of -{$i} month");
-      $key = $date->format('Y-m');
-      $monthlyRevenue[$key] = [
-        'year' => (int) $date->format('Y'),
-        'month' => (int) $date->format('m'),
-        'revenue' => 0
-      ];
+    // Doanh thu theo thời gian được chọn
+    $revenueChartData = [];
+    if ($chartMonth !== 'all' && $chartMonth !== null) {
+        $targetMonth = (int)$chartMonth;
+        $targetYear = ($chartYear !== 'all' && $chartYear !== null) ? (int)$chartYear : date('Y');
+        $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $targetMonth, $targetYear);
+        for ($i = 1; $i <= $daysInMonth; $i++) {
+            $key = sprintf('%02d/%02d', $i, $targetMonth);
+            $revenueChartData[$key] = [
+                'label' => $key,
+                'revenue' => 0
+            ];
+        }
+        $chartQuery = "SELECT DAY(created_at) as day, COALESCE(SUM(total_amount), 0) as revenue 
+            FROM orders WHERE status_id != 5 AND YEAR(created_at) = $targetYear AND MONTH(created_at) = $targetMonth 
+            GROUP BY DAY(created_at)";
+        $stmt = $conn->prepare($chartQuery);
+        $stmt->execute();
+        foreach ($stmt->fetchAll() as $row) {
+            $key = sprintf('%02d/%02d', $row['day'], $targetMonth);
+            $revenueChartData[$key]['revenue'] = (float)$row['revenue'];
+        }
+    } else {
+        $targetYear = ($chartYear !== 'all' && $chartYear !== null) ? (int)$chartYear : date('Y');
+        for ($i = 1; $i <= 12; $i++) {
+            $key = "Tháng $i";
+            $revenueChartData[$key] = [
+                'label' => $key,
+                'revenue' => 0
+            ];
+        }
+        $chartQuery = "SELECT MONTH(created_at) as month, COALESCE(SUM(total_amount), 0) as revenue 
+            FROM orders WHERE status_id != 5 AND YEAR(created_at) = $targetYear 
+            GROUP BY MONTH(created_at)";
+        $stmt = $conn->prepare($chartQuery);
+        $stmt->execute();
+        foreach ($stmt->fetchAll() as $row) {
+            $key = "Tháng " . $row['month'];
+            $revenueChartData[$key]['revenue'] = (float)$row['revenue'];
+        }
     }
-
-    foreach ($monthlyRevenueRows as $row) {
-      $key = sprintf('%04d-%02d', $row['year'], $row['month']);
-      if (isset($monthlyRevenue[$key])) {
-        $monthlyRevenue[$key]['revenue'] = (float) $row['revenue'];
-      }
-    }
+    $revenueChartData = array_values($revenueChartData);
 
     // Top 5 sách bán gần nhất (theo thời gian đặt hàng)
     $topBooksQuery = "SELECT DISTINCT b.book_id, b.title, b.author, b.price, o.created_at, o.order_code, u.full_name AS customer
@@ -255,12 +287,14 @@ class DashboardController
     $topBooksStmt->execute();
     $topBooks = $topBooksStmt->fetchAll();
 
-    // Sách bán chạy nhất theo số lượng bán
+    // Sách bán chạy nhất trong tháng hiện tại
     $bestSellersQuery = "SELECT b.book_id, b.title, b.author, b.price, COALESCE(SUM(oi.quantity), 0) AS sold_quantity, COALESCE(SUM(oi.subtotal), 0) AS revenue
       FROM books b
       JOIN order_items oi ON oi.book_id = b.book_id
       JOIN orders o ON o.order_id = oi.order_id
       WHERE o.status_id != 5
+        AND YEAR(o.created_at) = YEAR(CURRENT_DATE())
+        AND MONTH(o.created_at) = MONTH(CURRENT_DATE())
       GROUP BY b.book_id, b.title, b.author, b.price
       ORDER BY sold_quantity DESC, revenue DESC
       LIMIT 5";
@@ -295,7 +329,7 @@ class DashboardController
       'low_stock_books' => $lowStockBooks,
       'daily_revenue' => array_values($dailyRevenue),
       'weekly_revenue' => $weeklyRevenue,
-      'monthly_revenue' => array_values($monthlyRevenue),
+      'revenue_chart_data' => $revenueChartData,
       'order_status_distribution' => $orderStatusDistribution,
       'top_books' => $topBooks,
       'best_sellers' => $bestSellers,

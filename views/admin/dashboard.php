@@ -67,102 +67,29 @@ require_once './views/components/sidebar.php';
     </div>
   </div>
 
-  <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <div class="flex items-start justify-between mb-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-yellow-100 text-yellow-600">
-          <i data-lucide="clock" class="w-5 h-5"></i>
-        </div>
-      </div>
-      <p class="text-xs text-gray-400 mb-1">Đơn chờ xử lý</p>
-      <p class="font-bold text-[#333]" id="pendingOrdersValue"><?= $stats['pending_orders'] ?></p>
-    </div>
-
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <div class="flex items-start justify-between mb-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-green-100 text-[#4CAF50]">
-          <i data-lucide="dollar-sign" class="w-5 h-5"></i>
-        </div>
-      </div>
-      <p class="text-xs text-gray-400 mb-1">Doanh thu hôm nay</p>
-      <p class="font-bold text-[#333]" id="revenueTodayValue"><?= number_format($stats['revenue_today'], 0, ',', '.') ?> ₫</p>
-    </div>
-
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <div class="flex items-start justify-between mb-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-100 text-blue-600">
-          <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
-        </div>
-      </div>
-      <p class="text-xs text-gray-400 mb-1">Giá trị đơn trung bình</p>
-      <p class="font-bold text-[#333]" id="averageOrderValue"><?= number_format($stats['average_order_value'], 0, ',', '.') ?> ₫</p>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <div class="flex items-start justify-between mb-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-orange-100 text-orange-600">
-          <i data-lucide="calendar" class="w-5 h-5"></i>
-        </div>
-      </div>
-      <p class="text-xs text-gray-400 mb-1">Đơn hôm nay</p>
-      <p class="font-bold text-[#333]" id="todayOrdersValue"><?= $stats['today_orders'] ?></p>
-    </div>
-
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <div class="flex items-start justify-between mb-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-100 text-blue-600">
-          <i data-lucide="user-plus" class="w-5 h-5"></i>
-        </div>
-      </div>
-      <p class="text-xs text-gray-400 mb-1">Khách hàng mới tháng</p>
-      <p class="font-bold text-[#333]" id="newCustomersValue"><?= $stats['new_customers'] ?></p>
-    </div>
-
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <div class="flex items-start justify-between mb-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-100 text-purple-600">
-          <i data-lucide="users" class="w-5 h-5"></i>
-        </div>
-      </div>
-      <p class="text-xs text-gray-400 mb-1">Top khách hàng</p>
-      <p class="font-bold text-[#333]">5 người</p>
-    </div>
-  </div>
-
   <!-- Revenue Chart -->
   <div class="bg-white rounded-xl shadow-sm p-5">
-    <h3 class="font-semibold text-[#333] text-sm mb-4">Doanh thu theo tháng</h3>
-    <div id="revenueChartContainer">
-      <canvas id="revenueChart" width="400" height="200"></canvas>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-semibold text-[#333] text-sm">Biểu đồ Doanh thu</h3>
+      <div class="flex gap-2">
+          <select id="chartMonthFilter" class="text-xs border border-gray-200 rounded-md px-2 py-1 outline-none hover:border-gray-300">
+              <option value="all">Tất cả tháng</option>
+              <?php for($i=1; $i<=12; $i++): ?>
+                <option value="<?= $i ?>">Tháng <?= $i ?></option>
+              <?php endfor; ?>
+          </select>
+          <select id="chartYearFilter" class="text-xs border border-gray-200 rounded-md px-2 py-1 outline-none hover:border-gray-300">
+              <?php $currentYear = date('Y'); for($i=$currentYear-2; $i<=$currentYear; $i++): ?>
+                <option value="<?= $i ?>" <?= $i == $currentYear ? 'selected' : '' ?>>Năm <?= $i ?></option>
+              <?php endfor; ?>
+          </select>
+      </div>
     </div>
-    <div id="revenueChartEmpty" class="hidden text-sm text-gray-500">Chưa có dữ liệu doanh thu phù hợp để hiển thị biểu đồ.</div>
+    <div id="revenueChartContainer">
+      <canvas id="revenueChart" width="400" height="120"></canvas>
+    </div>
   </div>
 
-  <!-- Order status distribution -->
-  <div class="grid grid-cols-2 xl:grid-cols-5 gap-4">
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <p class="text-xs text-gray-400 mb-2">Đơn chờ xử lý</p>
-      <p class="font-bold text-[#333] text-lg" id="statusPendingValue"><?= $stats['order_status_distribution']['Chờ xác nhận'] ?? 0 ?></p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <p class="text-xs text-gray-400 mb-2">Đã xác nhận</p>
-      <p class="font-bold text-[#333] text-lg" id="statusConfirmedValue"><?= $stats['order_status_distribution']['Đã xác nhận'] ?? 0 ?></p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <p class="text-xs text-gray-400 mb-2">Đang giao</p>
-      <p class="font-bold text-[#333] text-lg" id="statusShippingValue"><?= $stats['order_status_distribution']['Đang giao hàng'] ?? 0 ?></p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <p class="text-xs text-gray-400 mb-2">Hoàn thành</p>
-      <p class="font-bold text-[#333] text-lg" id="statusCompletedValue"><?= $stats['order_status_distribution']['Hoàn thành'] ?? 0 ?></p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm p-5">
-      <p class="text-xs text-gray-400 mb-2">Đã hủy</p>
-      <p class="font-bold text-[#333] text-lg" id="statusCancelledValue"><?= $stats['order_status_distribution']['Đã hủy'] ?? 0 ?></p>
-    </div>
-  </div>
   <!-- Month comparison -->
   <div class="bg-white rounded-xl shadow-sm p-5">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -188,46 +115,10 @@ require_once './views/components/sidebar.php';
   <!-- Bottom: recent tables -->
   <div class="grid lg:grid-cols-2 gap-4">
 
-    <!-- Sách bán chạy -->
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-      <div class="px-5 py-4 border-b border-gray-100">
-        <h3 class="font-semibold text-[#333] text-sm">Sản phẩm bán gần nhất</h3>
-      </div>
-      <div class="divide-y divide-gray-50" id="topBooksList">
-        <?php if (!empty($stats['top_books'])): ?>
-          <?php foreach ($stats['top_books'] as $index => $book): ?>
-            <div class="flex items-center gap-3 px-5 py-4 top-book-row">
-              <span class="text-xs font-bold w-5 <?= $index === 0 ? 'text-[#FFC107]' : 'text-gray-400' ?>">
-                #<?= $index + 1 ?>
-              </span>
-              <div class="w-10 h-12 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
-                <i data-lucide="book" class="w-5 h-5 text-gray-400"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-[#333] truncate"><?= htmlspecialchars($book['title']) ?></p>
-                <p class="text-xs text-gray-400">
-                  <?= htmlspecialchars($book['author']) ?> · Đơn: #<?= htmlspecialchars($book['order_code']) ?>
-                </p>
-                <p class="text-xs text-gray-400">Khách: <?= htmlspecialchars($book['customer']) ?></p>
-              </div>
-              <div class="text-right shrink-0">
-                <p class="text-sm font-semibold text-[#4CAF50]">
-                  <?= number_format($book['price'], 0, ',', '.') ?> ₫
-                </p>
-                <p class="text-xs text-gray-400">Bán: <?= date('d/m/Y', strtotime($book['created_at'])) ?></p>
-              </div>
-            </div>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <div class="px-5 py-4 text-sm text-gray-500">Chưa có sản phẩm nào được bán gần đây.</div>
-        <?php endif; ?>
-      </div>
-    </div>
-
     <!-- Sách bán chạy nhất -->
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
       <div class="px-5 py-4 border-b border-gray-100">
-        <h3 class="font-semibold text-[#333] text-sm">Sách bán chạy nhất</h3>
+        <h3 class="font-semibold text-[#333] text-sm">Sách bán chạy tháng này</h3>
       </div>
       <div class="divide-y divide-gray-50" id="bestSellersList">
         <?php if (!empty($stats['best_sellers'])): ?>
@@ -255,48 +146,23 @@ require_once './views/components/sidebar.php';
       </div>
     </div>
 
-    <!-- Đơn hàng gần đây -->
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-      <div class="px-5 py-4 border-b border-gray-100">
-        <h3 class="font-semibold text-[#333] text-sm">Đơn hàng gần đây</h3>
-      </div>
-      <div class="divide-y divide-gray-50" id="recentOrdersList">
-        <?php
-        $statusClass = [
-          'Chờ xác nhận' => 'bg-yellow-100 text-yellow-700',
-          'Đã xác nhận' => 'bg-blue-100 text-blue-700',
-          'Đang giao hàng' => 'bg-blue-100 text-blue-700',
-          'Hoàn thành' => 'bg-green-100 text-green-700',
-          'Đã hủy' => 'bg-red-100 text-red-500',
-        ];
-        if (!empty($stats['recent_orders'])):
-          foreach ($stats['recent_orders'] as $order): ?>
-            <div class="flex items-center gap-3 px-5 py-3 recent-order-row">
-              <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
-                <i data-lucide="shopping-bag" class="w-[14px] h-[14px] text-gray-500"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-[#333]">#<?= htmlspecialchars($order['order_code']) ?></p>
-                <p class="text-xs text-gray-400"><?= htmlspecialchars($order['customer']) ?> · <?= date('d/m/Y', strtotime($order['created_at'])) ?></p>
-              </div>
-              <div class="text-right shrink-0">
-                <p class="text-sm font-semibold"><?= number_format($order['total_amount'], 0, ',', '.') ?> ₫</p>
-                <span class="text-xs px-2 py-0.5 rounded-full <?= $statusClass[$order['status_name']] ?? 'bg-gray-100 text-gray-500' ?>">
-                  <?= htmlspecialchars($order['status_name'] ?? 'Không xác định') ?>
-                </span>
-              </div>
-            </div>
-          <?php endforeach;
-        else: ?>
-          <div class="px-5 py-4 text-sm text-gray-500">Chưa có đơn hàng gần đây.</div>
-        <?php endif; ?>
-      </div>
-    </div>
-
     <!-- Top khách hàng chi tiêu -->
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-      <div class="px-5 py-4 border-b border-gray-100">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
         <h3 class="font-semibold text-[#333] text-sm">Top khách hàng chi tiêu</h3>
+        <div class="flex gap-2">
+            <select id="tcMonthFilter" class="text-xs border border-gray-200 rounded-md px-2 py-1 outline-none hover:border-gray-300">
+                <option value="all">Tất cả tháng</option>
+                <?php for($i=1; $i<=12; $i++): ?>
+                  <option value="<?= $i ?>" <?= date('m') == $i ? 'selected' : '' ?>>Tháng <?= $i ?></option>
+                <?php endfor; ?>
+            </select>
+            <select id="tcYearFilter" class="text-xs border border-gray-200 rounded-md px-2 py-1 outline-none hover:border-gray-300">
+                <?php for($i=$currentYear-2; $i<=$currentYear; $i++): ?>
+                  <option value="<?= $i ?>" <?= date('Y') == $i ? 'selected' : '' ?>>Năm <?= $i ?></option>
+                <?php endfor; ?>
+            </select>
+        </div>
       </div>
       <div class="divide-y divide-gray-50" id="topCustomersList">
         <?php if (!empty($stats['top_customers'])): ?>
@@ -313,30 +179,27 @@ require_once './views/components/sidebar.php';
             </div>
           <?php endforeach; ?>
         <?php else: ?>
-          <div class="px-5 py-4 text-sm text-gray-500">Chưa có khách hàng đủ điều kiện.</div>
+          <div class="px-5 py-4 text-sm text-gray-500">Không có khách hàng chi tiêu trong thời gian này.</div>
         <?php endif; ?>
       </div>
     </div>
 
-
-
   </div>
+
+
+
+
 </main>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const ctx = document.getElementById('revenueChart').getContext('2d');
   let revenueChartInstance = null;
-  const monthlyData = <?php echo json_encode($stats['monthly_revenue']); ?>;
-  const labels = monthlyData.map(item => `${item.month}/${item.year}`);
-  const revenues = monthlyData.map(item => parseFloat(item.revenue));
-  const hasRevenue = revenues.some(value => value > 0);
+  const initialChartData = <?php echo json_encode($stats['revenue_chart_data'] ?? []); ?>;
+  const labels = initialChartData.map(item => item.label);
+  const revenues = initialChartData.map(item => parseFloat(item.revenue));
 
-  if (!hasRevenue) {
-    document.getElementById('revenueChartContainer').classList.add('hidden');
-    document.getElementById('revenueChartEmpty').classList.remove('hidden');
-  } else {
-    revenueChartInstance = new Chart(ctx, {
+  revenueChartInstance = new Chart(ctx, {
       type: 'line',
       data: {
         labels: labels,
@@ -373,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
     });
-  }
 
   // Daily revenue chart
   let dailyChartInstance = null;
@@ -413,7 +275,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   async function refreshDashboardWidgets() {
     try {
-      const response = await fetch('<?= BASE_URL ?>?act=admin-dashboard-data');
+      const tcMonth = document.getElementById('tcMonthFilter')?.value || '<?= date('m') ?>';
+      const tcYear = document.getElementById('tcYearFilter')?.value || '<?= date('Y') ?>';
+      const chartMonth = document.getElementById('chartMonthFilter')?.value || 'all';
+      const chartYear = document.getElementById('chartYearFilter')?.value || '<?= date('Y') ?>';
+      
+      const response = await fetch(`<?= BASE_URL ?>?act=admin-dashboard-data&tc_month=${tcMonth}&tc_year=${tcYear}&chart_month=${chartMonth}&chart_year=${chartYear}`);
       if (!response.ok) {
         return;
       }
@@ -425,51 +292,55 @@ document.addEventListener('DOMContentLoaded', function() {
       const topCustomersList = document.getElementById('topCustomersList');
       const lowStockBooksList = document.getElementById('lowStockBooksList');
 
-      if (Array.isArray(data.top_books) && data.top_books.length > 0) {
-        topBooksList.innerHTML = data.top_books.map((book, index) => `
-          <div class="flex items-center gap-3 px-5 py-4 top-book-row">
-            <span class="text-xs font-bold w-5 ${index === 0 ? 'text-[#FFC107]' : 'text-gray-400'}">
-              #${index + 1}
-            </span>
-            <div class="w-10 h-12 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
-              <i data-lucide="book" class="w-5 h-5 text-gray-400"></i>
+      if (topBooksList) {
+        if (Array.isArray(data.top_books) && data.top_books.length > 0) {
+          topBooksList.innerHTML = data.top_books.map((book, index) => `
+            <div class="flex items-center gap-3 px-5 py-4 top-book-row">
+              <span class="text-xs font-bold w-5 ${index === 0 ? 'text-[#FFC107]' : 'text-gray-400'}">
+                #${index + 1}
+              </span>
+              <div class="w-10 h-12 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
+                <i data-lucide="book" class="w-5 h-5 text-gray-400"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-[#333] truncate">${book.title}</p>
+                <p class="text-xs text-gray-400">${book.author} · Đơn: #${book.order_code}</p>
+                <p class="text-xs text-gray-400">Khách: ${book.customer}</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-semibold text-[#4CAF50]">${new Intl.NumberFormat('vi-VN').format(book.price)} ₫</p>
+                <p class="text-xs text-gray-400">Bán: ${new Date(book.created_at).toLocaleDateString('vi-VN')}</p>
+              </div>
             </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-[#333] truncate">${book.title}</p>
-              <p class="text-xs text-gray-400">${book.author} · Đơn: #${book.order_code}</p>
-              <p class="text-xs text-gray-400">Khách: ${book.customer}</p>
-            </div>
-            <div class="text-right shrink-0">
-              <p class="text-sm font-semibold text-[#4CAF50]">${new Intl.NumberFormat('vi-VN').format(book.price)} ₫</p>
-              <p class="text-xs text-gray-400">Bán: ${new Date(book.created_at).toLocaleDateString('vi-VN')}</p>
-            </div>
-          </div>
-        `).join('');
-      } else {
-        topBooksList.innerHTML = '<div class="px-5 py-4 text-sm text-gray-500">Chưa có sản phẩm nào được bán gần đây.</div>';
+          `).join('');
+        } else {
+          topBooksList.innerHTML = '<div class="px-5 py-4 text-sm text-gray-500">Chưa có sản phẩm nào được bán gần đây.</div>';
+        }
       }
 
-      if (Array.isArray(data.best_sellers) && data.best_sellers.length > 0) {
-        bestSellersList.innerHTML = data.best_sellers.map((book, index) => `
-          <div class="flex items-center gap-3 px-5 py-4 best-seller-row">
-            <span class="text-xs font-bold w-5 ${index === 0 ? 'text-[#FFC107]' : 'text-gray-400'}">
-              #${index + 1}
-            </span>
-            <div class="w-10 h-12 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
-              <i data-lucide="book" class="w-5 h-5 text-gray-400"></i>
+      if (bestSellersList) {
+        if (Array.isArray(data.best_sellers) && data.best_sellers.length > 0) {
+          bestSellersList.innerHTML = data.best_sellers.map((book, index) => `
+            <div class="flex items-center gap-3 px-5 py-4 best-seller-row">
+              <span class="text-xs font-bold w-5 ${index === 0 ? 'text-[#FFC107]' : 'text-gray-400'}">
+                #${index + 1}
+              </span>
+              <div class="w-10 h-12 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
+                <i data-lucide="book" class="w-5 h-5 text-gray-400"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-[#333] truncate">${book.title}</p>
+                <p class="text-xs text-gray-400">${book.author}</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-semibold text-[#4CAF50]">${new Intl.NumberFormat('vi-VN').format(book.sold_quantity)} bán</p>
+                <p class="text-xs text-gray-400">Doanh thu ${new Intl.NumberFormat('vi-VN').format(book.revenue)} ₫</p>
+              </div>
             </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-[#333] truncate">${book.title}</p>
-              <p class="text-xs text-gray-400">${book.author}</p>
-            </div>
-            <div class="text-right shrink-0">
-              <p class="text-sm font-semibold text-[#4CAF50]">${new Intl.NumberFormat('vi-VN').format(book.sold_quantity)} bán</p>
-              <p class="text-xs text-gray-400">Doanh thu ${new Intl.NumberFormat('vi-VN').format(book.revenue)} ₫</p>
-            </div>
-          </div>
-        `).join('');
-      } else {
-        bestSellersList.innerHTML = '<div class="px-5 py-4 text-sm text-gray-500">Chưa có sản phẩm bán chạy.</div>';
+          `).join('');
+        } else {
+          bestSellersList.innerHTML = '<div class="px-5 py-4 text-sm text-gray-500">Chưa có sản phẩm bán chạy.</div>';
+        }
       }
 
       const statusClass = {
@@ -480,26 +351,28 @@ document.addEventListener('DOMContentLoaded', function() {
         'Đã hủy': 'bg-red-100 text-red-500',
       };
 
-      if (Array.isArray(data.recent_orders) && data.recent_orders.length > 0) {
-        recentOrdersList.innerHTML = data.recent_orders.map(order => `
-          <div class="flex items-center gap-3 px-5 py-3 recent-order-row">
-            <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
-              <i data-lucide="shopping-bag" class="w-[14px] h-[14px] text-gray-500"></i>
+      if (recentOrdersList) {
+        if (Array.isArray(data.recent_orders) && data.recent_orders.length > 0) {
+          recentOrdersList.innerHTML = data.recent_orders.map(order => `
+            <div class="flex items-center gap-3 px-5 py-3 recent-order-row">
+              <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
+                <i data-lucide="shopping-bag" class="w-[14px] h-[14px] text-gray-500"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-[#333]">#${order.order_code}</p>
+                <p class="text-xs text-gray-400">${order.customer} · ${new Date(order.created_at).toLocaleDateString('vi-VN')}</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-semibold">${new Intl.NumberFormat('vi-VN').format(order.total_amount)} ₫</p>
+                <span class="text-xs px-2 py-0.5 rounded-full ${statusClass[order.status_name] ?? 'bg-gray-100 text-gray-500'}">
+                  ${order.status_name || 'Không xác định'}
+                </span>
+              </div>
             </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-[#333]">#${order.order_code}</p>
-              <p class="text-xs text-gray-400">${order.customer} · ${new Date(order.created_at).toLocaleDateString('vi-VN')}</p>
-            </div>
-            <div class="text-right shrink-0">
-              <p class="text-sm font-semibold">${new Intl.NumberFormat('vi-VN').format(order.total_amount)} ₫</p>
-              <span class="text-xs px-2 py-0.5 rounded-full ${statusClass[order.status_name] ?? 'bg-gray-100 text-gray-500'}">
-                ${order.status_name || 'Không xác định'}
-              </span>
-            </div>
-          </div>
-        `).join('');
-      } else {
-        recentOrdersList.innerHTML = '<div class="px-5 py-4 text-sm text-gray-500">Chưa có đơn hàng gần đây.</div>';
+          `).join('');
+        } else {
+          recentOrdersList.innerHTML = '<div class="px-5 py-4 text-sm text-gray-500">Chưa có đơn hàng gần đây.</div>';
+        }
       }
 
       const updateStatText = (id, value) => {
@@ -539,25 +412,19 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
           `).join('');
         } else {
-          topCustomersList.innerHTML = '<div class="px-5 py-4 text-sm text-gray-500">Chưa có khách hàng đủ điều kiện.</div>';
+          topCustomersList.innerHTML = '<div class="px-5 py-4 text-sm text-gray-500">Không có khách hàng chi tiêu trong thời gian này.</div>';
         }
       }
 
 
 
-      if (Array.isArray(data.monthly_revenue) && revenueChartInstance) {
-        const updatedLabels = data.monthly_revenue.map(item => `${item.month}/${item.year}`);
-        const updatedRevenues = data.monthly_revenue.map(item => parseFloat(item.revenue));
-        if (updatedRevenues.some(value => value > 0)) {
-          document.getElementById('revenueChartContainer').classList.remove('hidden');
-          document.getElementById('revenueChartEmpty').classList.add('hidden');
-          revenueChartInstance.data.labels = updatedLabels;
-          revenueChartInstance.data.datasets[0].data = updatedRevenues;
-          revenueChartInstance.update();
-        } else {
-          document.getElementById('revenueChartContainer').classList.add('hidden');
-          document.getElementById('revenueChartEmpty').classList.remove('hidden');
-        }
+      if (Array.isArray(data.revenue_chart_data) && revenueChartInstance) {
+        const updatedLabels = data.revenue_chart_data.map(item => item.label);
+        const updatedRevenues = data.revenue_chart_data.map(item => parseFloat(item.revenue));
+        
+        revenueChartInstance.data.labels = updatedLabels;
+        revenueChartInstance.data.datasets[0].data = updatedRevenues;
+        revenueChartInstance.update();
       }
 
       if (window.lucide) {
@@ -570,6 +437,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   refreshDashboardWidgets();
   setInterval(refreshDashboardWidgets, 10000);
+
+  // Gắn sự kiện cho các filters
+  ['tcMonthFilter', 'tcYearFilter', 'chartMonthFilter', 'chartYearFilter'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) {
+      el.addEventListener('change', refreshDashboardWidgets);
+    }
+  });
 });
 </script>
 
