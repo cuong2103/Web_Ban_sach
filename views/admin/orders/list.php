@@ -13,7 +13,60 @@ include_once './views/components/sidebar.php';
                   </div>
               </div>
 
-              
+              <!-- Thống kê đơn hàng hôm nay -->
+              <?php
+                $todayOrders     = (int)($dailyStats['today_orders'] ?? 0);
+                $todayRevenue    = (float)($dailyStats['today_revenue'] ?? 0);
+                $pendingOrders   = (int)($dailyStats['pending_orders'] ?? 0);
+                $cancelledOrders = (int)($dailyStats['cancelled_orders'] ?? 0);
+              ?>
+              <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+
+                <!-- Đơn hàng hôm nay -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="shopping-bag" class="w-6 h-6 text-blue-500"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs text-gray-500 mb-0.5">Đơn hàng hôm nay</p>
+                    <p class="text-2xl font-bold text-gray-900"><?= number_format($todayOrders) ?></p>
+                  </div>
+                </div>
+
+                <!-- Doanh thu hôm nay -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="trending-up" class="w-6 h-6 text-green-500"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs text-gray-500 mb-0.5">Doanh thu hôm nay</p>
+                    <p class="text-xl font-bold text-gray-900"><?= number_format($todayRevenue, 0, ',', '.') ?>đ</p>
+                  </div>
+                </div>
+
+                <!-- Chờ xác nhận -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="clock" class="w-6 h-6 text-yellow-500"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs text-gray-500 mb-0.5">Chờ xác nhận</p>
+                    <p class="text-2xl font-bold text-gray-900"><?= number_format($pendingOrders) ?></p>
+                  </div>
+                </div>
+
+                <!-- Đã hủy hôm nay -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="x-circle" class="w-6 h-6 text-red-500"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs text-gray-500 mb-0.5">Đã hủy hôm nay</p>
+                    <p class="text-2xl font-bold text-gray-900"><?= number_format($cancelledOrders) ?></p>
+                  </div>
+                </div>
+
+              </div>
 
               <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                   
