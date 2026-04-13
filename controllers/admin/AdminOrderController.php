@@ -26,6 +26,7 @@ class AdminOrderController
         $totalPages = ceil($total / $limit);
         
         $statuses = $this->adminOrderModel->getAllStatuses();
+        $dailyStats = $this->adminOrderModel->getDailyOrderStats();
 
         require_once './views/admin/orders/list.php';
     }

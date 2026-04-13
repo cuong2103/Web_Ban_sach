@@ -161,6 +161,24 @@ class AdminOrderModel
     }
 
     /**
+     * Thống kê đơn hàng hôm nay
+     */
+    public function getDailyOrderStats()
+    {
+        $stmt = $this->conn->prepare("
+            SELECT
+                COUNT(*) AS today_orders,
+                COALESCE(SUM(CASE WHEN status_id != 5 THEN total_amount ELSE 0 END), 0) AS today_revenue,
+                SUM(CASE WHEN status_id = 1 THEN 1 ELSE 0 END) AS pending_orders,
+                SUM(CASE WHEN status_id = 5 THEN 1 ELSE 0 END) AS cancelled_orders
+            FROM orders
+            WHERE DATE(created_at) = CURDATE()
+        ");
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    /**
      * Cập nhật trạng thái đơn hàng
      * Trạng thái 5 là Cancelled. Khi Hủy thì trả hàng về kho.
      */
