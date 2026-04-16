@@ -11,6 +11,28 @@ include_once './views/components/sidebar.php';
                       <h1 class="text-2xl font-bold text-gray-900">Quản lý Đơn hàng</h1>
                       <p class="text-sm text-gray-500 mt-1">Danh sách tất cả đơn hàng từ khách hàng</p>
                   </div>
+
+                  <?php
+                    // Lấy số đơn đang chờ để hiện badge (dùng trước khi $dailyStats được khởi tạo bên dưới)
+                    $pendingCount = (int)(($dailyStats['pending_orders'] ?? 0));
+                  ?>
+                  <form method="POST" action="<?= BASE_URL ?>?act=admin-orders-confirm-all"
+                        onsubmit="return confirm('Bạn có chắc muốn xác nhận tất cả <?= $pendingCount ?> đơn hàng đang chờ không?')">
+                      <button type="submit"
+                              <?= $pendingCount === 0 ? 'disabled' : '' ?>
+                              class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm transition-all
+                                     <?= $pendingCount > 0
+                                           ? 'bg-[#4CAF50] text-white hover:bg-green-600 shadow-sm hover:shadow-md'
+                                           : 'bg-gray-100 text-gray-400 cursor-not-allowed' ?>">
+                          <i data-lucide="check-check" class="w-4 h-4"></i>
+                          Xác nhận tất cả
+                          <?php if ($pendingCount > 0): ?>
+                              <span class="bg-white/30 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                                  <?= $pendingCount ?>
+                              </span>
+                          <?php endif; ?>
+                      </button>
+                  </form>
               </div>
 
               <!-- Thống kê đơn hàng hôm nay -->

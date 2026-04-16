@@ -96,6 +96,7 @@ match ($act) {
   'admin-orders' => (new AdminOrderController())->list(),
   'admin-order-detail' => (new AdminOrderController())->detail(),
   'admin-order-update-status' => (new AdminOrderController())->updateStatus(),
+  'admin-orders-confirm-all' => (new AdminOrderController())->confirmAll(),
 
   // ─── Admin: Voucher Management ────────────────────────────────────────────────
   'admin-vouchers' => (new AdminVoucherController())->list(),

@@ -161,6 +161,19 @@ class AdminOrderModel
     }
 
     /**
+     * Xác nhận tất cả đơn hàng đang chờ (status_id=1 -> status_id=2)
+     */
+    public function confirmAllPendingOrders()
+    {
+        $stmt = $this->conn->prepare("
+            UPDATE orders SET status_id = 2
+            WHERE status_id = 1
+        ");
+        $stmt->execute();
+        return $stmt->rowCount(); // số đơn vừa được xác nhận
+    }
+
+    /**
      * Thống kê đơn hàng hôm nay
      */
     public function getDailyOrderStats()

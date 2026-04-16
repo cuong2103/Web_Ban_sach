@@ -96,4 +96,24 @@ class AdminOrderController
 
         redirect("admin-order-detail&id={$orderId}");
     }
+
+    /**
+     * Xác nhận tất cả đơn hàng đang chờ xác nhận
+     */
+    public function confirmAll()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('admin-orders');
+        }
+
+        $count = $this->adminOrderModel->confirmAllPendingOrders();
+
+        if ($count > 0) {
+            Message::set('success', "Đã xác nhận thành công {$count} đơn hàng.");
+        } else {
+            Message::set('success', 'Không có đơn hàng nào đang chờ xác nhận.');
+        }
+
+        redirect('admin-orders');
+    }
 }
